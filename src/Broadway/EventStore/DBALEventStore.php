@@ -15,16 +15,18 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
+use Broadway\EventStore\Exception\DuplicatePlayheadException;
 use Broadway\EventStore\Exception\InvalidIdentifierException;
 use Broadway\EventStore\Management\Criteria;
 use Broadway\EventStore\Management\CriteriaNotSupportedException;
 use Broadway\EventStore\Management\EventStoreManagementInterface;
 use Broadway\Serializer\SerializerInterface;
+use Broadway\UuidGenerator\Converter\BinaryUuidConverterInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Version;
-use Rhumsaa\Uuid\Uuid;
 
 /**
  * Event store using a relational database as storage.
@@ -46,21 +48,26 @@ class DBALEventStore implements EventStoreInterface, EventStoreManagementInterfa
 
     private $useBinary;
 
+    private $binaryUuidConverter;
+
     /**
      * @param string $tableName
+     * @param bool   $useBinary
      */
     public function __construct(
         Connection $connection,
         SerializerInterface $payloadSerializer,
         SerializerInterface $metadataSerializer,
         $tableName,
-        $useBinary = false
+        $useBinary,
+        BinaryUuidConverterInterface $binaryUuidConverter
     ) {
-        $this->connection         = $connection;
-        $this->payloadSerializer  = $payloadSerializer;
-        $this->metadataSerializer = $metadataSerializer;
-        $this->tableName          = $tableName;
-        $this->useBinary          = (bool) $useBinary;
+        $this->connection          = $connection;
+        $this->payloadSerializer   = $payloadSerializer;
+        $this->metadataSerializer  = $metadataSerializer;
+        $this->tableName           = $tableName;
+        $this->useBinary           = (bool) $useBinary;
+        $this->binaryUuidConverter = $binaryUuidConverter;
 
         if ($this->useBinary && Version::compare('2.5.0') >= 0) {
             throw new \InvalidArgumentException(
@@ -105,11 +112,16 @@ class DBALEventStore implements EventStoreInterface, EventStoreManagementInterfa
         $this->connection->beginTransaction();
 
         try {
+            /** @var DomainMessage $domainMessage */
             foreach ($eventStream as $domainMessage) {
                 $this->insertMessage($this->connection, $domainMessage);
             }
 
             $this->connection->commit();
+        } catch (UniqueConstraintViolationException $exception) {
+            $this->connection->rollBack();
+
+            throw new DuplicatePlayheadException($eventStream, $exception);
         } catch (DBALException $exception) {
             $this->connection->rollBack();
 
@@ -206,7 +218,7 @@ class DBALEventStore implements EventStoreInterface, EventStoreManagementInterfa
     {
         if ($this->useBinary) {
             try {
-                return Uuid::fromString($id)->getBytes();
+                return $this->binaryUuidConverter->fromString($id);
             } catch (\Exception $e) {
                 throw new InvalidIdentifierException(
                     'Only valid UUIDs are allowed to by used with the binary storage mode.'
@@ -221,7 +233,7 @@ class DBALEventStore implements EventStoreInterface, EventStoreManagementInterfa
     {
         if ($this->useBinary) {
             try {
-                return Uuid::fromBytes($id)->toString();
+                return $this->binaryUuidConverter->fromBytes($id);
             } catch (\Exception $e) {
                 throw new InvalidIdentifierException(
                     'Could not convert binary storage value to UUID.'

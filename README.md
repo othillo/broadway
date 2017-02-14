@@ -9,7 +9,7 @@ together to provide a full CQRS\ES experience.
 > Note: while broadway is currently used in production, you should probably
 > know what you're doing. ;)
 
-[![Build Status](https://travis-ci.org/qandidate-labs/broadway.svg?branch=master)](https://travis-ci.org/qandidate-labs/broadway)
+[![Build Status](https://travis-ci.org/broadway/broadway.svg?branch=master)](https://travis-ci.org/broadway/broadway)
 
 Feel free to join #qandidate on freenode with questions and remarks!
 
@@ -49,7 +49,7 @@ component for more information.
 - [Processor](src/Broadway/Processor/)
 - [ReadModel](src/Broadway/ReadModel/)
 - [Repository](src/Broadway/Repository/)
-- [Saga](src/Broadway/Saga/)
+- [Saga](https://github.com/broadway/broadway-saga)
 - [Serializer](src/Broadway/Serializer/)
 
 ## Integrations
@@ -60,7 +60,7 @@ component for more information.
 
 Contributions for integrations with other projects are appreciated!
 
-[bundle]: src/Broadway/Bundle/
+[bundle]: https://github.com/broadway/broadway-bundle
 
 ## Acknowledgements
 

@@ -7,17 +7,10 @@ cache:
         - $HOME/.composer/cache
         - vendor
 
-env:
-    global:
-        - COMPOSER_LOWEST=""
-
 matrix:
     include:
         - php: 5.5
         - php: 5.6
-          env: COMPOSER_LOWEST=""
-        - php: 5.6
-          env: COMPOSER_LOWEST="--prefer-lowest"
         - php: 7
         - php: hhvm
     fast_finish: true
@@ -33,13 +26,11 @@ addons:
 before_install:
     # Disable XDebug speed up test execution. (Ignore failures if platform does not had the extension installed)
     - phpenv config-rm xdebug.ini || return 0
-    - echo "extension=mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini || return 0
     - echo "memory_limit=2G" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini || return 0
 
 install:
     - travis_retry composer self-update
-    - travis_retry composer install --ignore-platform-reqs
-    - travis_retry php -dmemory_limit=3G `which composer` update symfony/framework-bundle $COMPOSER_LOWEST --ignore-platform-reqs
+    - travis_retry composer install
     - composer info -i
 
 script:
@@ -51,5 +42,4 @@ branches:
       - develop
 
 services:
-    - mongodb
     - elasticsearch

@@ -9,10 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Broadway\Saga\State;
+namespace Broadway\ReadModel;
 
-use RuntimeException;
+use Broadway\Serializer\SerializableInterface;
 
-class RepositoryException extends RuntimeException
+/**
+ * Represents a serializable read model.
+ */
+interface SerializableReadModelInterface extends SerializableInterface, ReadModelInterface
 {
 }
