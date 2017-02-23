@@ -17,13 +17,13 @@ use Broadway\Domain\DomainMessage;
 /**
  * Event store that is able to record all appended events.
  */
-class TraceableEventStore implements EventStoreInterface
+class TraceableEventStore implements SnapshottingEventStoreInterface
 {
     private $eventStore;
     private $recorded = [];
     private $tracing  = false;
 
-    public function __construct(EventStoreInterface $eventStore)
+    public function __construct(SnapshottingEventStoreInterface $eventStore)
     {
         $this->eventStore = $eventStore;
     }
@@ -63,6 +63,14 @@ class TraceableEventStore implements EventStoreInterface
     public function load($id)
     {
         return $this->eventStore->load($id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function loadFromPlayhead($id, $playhead)
+    {
+        return $this->eventStore->loadFromPlayhead($id, $playhead);
     }
 
     /**

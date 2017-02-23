@@ -23,7 +23,7 @@ use Broadway\EventStore\Management\EventStoreManagementInterface;
  *
  * Useful for testing code that uses an event store.
  */
-class InMemoryEventStore implements EventStoreInterface, EventStoreManagementInterface
+class InMemoryEventStore implements SnapshottingEventStoreInterface, EventStoreManagementInterface
 {
     private $events = [];
 
@@ -39,6 +39,16 @@ class InMemoryEventStore implements EventStoreInterface, EventStoreManagementInt
         }
 
         throw new EventStreamNotFoundException(sprintf('EventStream not found for aggregate with id %s', $id));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadFromPlayhead($id, $playhead)
+    {
+        return new DomainEventStream(array_filter($this->load($id), function(DomainMessage $domainMessage) use ($playhead) {
+            return $domainMessage->getPlayhead() >= $playhead;
+        }));
     }
 
     /**

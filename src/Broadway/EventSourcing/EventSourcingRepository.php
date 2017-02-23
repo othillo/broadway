@@ -12,6 +12,7 @@
 namespace Broadway\EventSourcing;
 
 use Assert\Assertion as Assert;
+use Assert\Assertion;
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 use Broadway\EventHandling\EventBusInterface;
@@ -26,7 +27,7 @@ use Broadway\Repository\RepositoryInterface;
  */
 class EventSourcingRepository implements RepositoryInterface
 {
-    private $eventStore;
+    protected $eventStore;
     private $eventBus;
     private $aggregateClass;
     private $eventStreamDecorators = [];
@@ -47,6 +48,8 @@ class EventSourcingRepository implements RepositoryInterface
         array $eventStreamDecorators = []
     ) {
         $this->assertExtendsEventSourcedAggregateRoot($aggregateClass);
+
+        Assertion::allIsInstanceOf($eventStreamDecorators, EventStreamDecoratorInterface::class);
 
         $this->eventStore            = $eventStore;
         $this->eventBus              = $eventBus;
