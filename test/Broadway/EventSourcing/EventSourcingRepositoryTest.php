@@ -17,13 +17,23 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\TraceableEventBus;
 use Broadway\EventSourcing\AggregateFactory\NamedConstructorAggregateFactory;
 use Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory;
+use Broadway\EventSourcing\Testing\TestEventSourcedAggregate;
 use Broadway\EventStore\TraceableEventStore;
 
 class EventSourcingRepositoryTest extends AbstractEventSourcingRepositoryTest
 {
-    protected function createEventSourcingRepository(TraceableEventStore $eventStore, TraceableEventBus $eventBus, array $eventStreamDecorators)
-    {
-        return new EventSourcingRepository($eventStore, $eventBus, '\Broadway\EventSourcing\TestEventSourcedAggregate', new PublicConstructorAggregateFactory(), $eventStreamDecorators);
+    protected function createEventSourcingRepository(
+        TraceableEventStore $eventStore,
+        TraceableEventBus $eventBus,
+        array $eventStreamDecorators
+    ) {
+        return new EventSourcingRepository(
+            $eventStore,
+            $eventBus,
+            TestEventSourcedAggregate::class,
+            new PublicConstructorAggregateFactory(),
+            $eventStreamDecorators
+        );
     }
 
     protected function createAggregate()
@@ -93,21 +103,6 @@ class EventSourcingRepositoryTest extends AbstractEventSourcingRepositoryTest
             $staticFactory,
             []
         );
-    }
-}
-
-class TestEventSourcedAggregate extends EventSourcedAggregateRoot
-{
-    public $numbers;
-
-    public function getAggregateRootId()
-    {
-        return 42;
-    }
-
-    protected function applyDidNumberEvent($event)
-    {
-        $this->numbers[] = $event->number;
     }
 }
 
