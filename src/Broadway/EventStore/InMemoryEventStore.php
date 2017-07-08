@@ -12,18 +12,17 @@
 namespace Broadway\EventStore;
 
 use Broadway\Domain\DomainEventStream;
-use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventStore\Exception\DuplicatePlayheadException;
 use Broadway\EventStore\Management\Criteria;
-use Broadway\EventStore\Management\EventStoreManagementInterface;
+use Broadway\EventStore\Management\EventStoreManagement;
 
 /**
  * In-memory implementation of an event store.
  *
  * Useful for testing code that uses an event store.
  */
-class InMemoryEventStore implements EventStoreInterface, EventStoreManagementInterface
+class InMemoryEventStore implements EventStore, EventStoreManagement
 {
     private $events = [];
 
@@ -44,7 +43,30 @@ class InMemoryEventStore implements EventStoreInterface, EventStoreManagementInt
     /**
      * {@inheritDoc}
      */
-    public function append($id, DomainEventStreamInterface $eventStream)
+    public function loadFromPlayhead($id, $playhead)
+    {
+        $id = (string) $id;
+
+        if (!isset($this->events[$id])) {
+            return new DomainEventStream([]);
+        }
+
+        return new DomainEventStream(
+            array_values(
+                array_filter(
+                    $this->events[$id],
+                    function ($event) use ($playhead) {
+                        return $playhead <= $event->getPlayhead();
+                    }
+                )
+            )
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function append($id, DomainEventStream $eventStream)
     {
         $id = (string) $id;
 
@@ -63,8 +85,8 @@ class InMemoryEventStore implements EventStoreInterface, EventStoreManagementInt
     }
 
     /**
-     * @param DomainMessage[]            $events
-     * @param DomainEventStreamInterface $eventsToAppend
+     * @param DomainMessage[]   $events
+     * @param DomainEventStream $eventsToAppend
      */
     private function assertStream($events, $eventsToAppend)
     {
@@ -78,7 +100,7 @@ class InMemoryEventStore implements EventStoreInterface, EventStoreManagementInt
         }
     }
 
-    public function visitEvents(Criteria $criteria, EventVisitorInterface $eventVisitor)
+    public function visitEvents(Criteria $criteria, EventVisitor $eventVisitor)
     {
         foreach ($this->events as $id => $events) {
             foreach ($events as $event) {
