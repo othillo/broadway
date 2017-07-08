@@ -41,10 +41,10 @@ class DateTimeTest extends TestCase
 
     public function providesLocales()
     {
-        return array(
-            array('en_GB.UTF-8'),
-            array('fr_FR.UTF-8'),
-        );
+        return [
+            ['en_GB.UTF-8'],
+            ['fr_FR.UTF-8'],
+        ];
     }
 
     /**
