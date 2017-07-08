@@ -29,7 +29,7 @@ class DuplicatePlayheadException extends EventStoreException
     /**
      * @return DomainEventStream
      */
-    public function getEventStream()
+    public function getEventStream(): DomainEventStream
     {
         return $this->eventStream;
     }

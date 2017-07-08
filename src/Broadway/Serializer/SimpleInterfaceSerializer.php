@@ -23,7 +23,7 @@ class SimpleInterfaceSerializer implements Serializer
     /**
      * {@inheritDoc}
      */
-    public function serialize($object)
+    public function serialize($object): array
     {
         if (! $object instanceof Serializable) {
             throw new SerializationException(sprintf(
