@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing;
 
 use Assert\Assertion as Assert;
@@ -42,23 +44,23 @@ class EventSourcingRepository implements Repository
     public function __construct(
         EventStore $eventStore,
         EventBus $eventBus,
-        $aggregateClass,
+        string $aggregateClass,
         AggregateFactory $aggregateFactory,
         array $eventStreamDecorators = []
     ) {
         $this->assertExtendsEventSourcedAggregateRoot($aggregateClass);
 
-        $this->eventStore            = $eventStore;
-        $this->eventBus              = $eventBus;
-        $this->aggregateClass        = $aggregateClass;
-        $this->aggregateFactory      = $aggregateFactory;
+        $this->eventStore = $eventStore;
+        $this->eventBus = $eventBus;
+        $this->aggregateClass = $aggregateClass;
+        $this->aggregateFactory = $aggregateFactory;
         $this->eventStreamDecorators = $eventStreamDecorators;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function load($id)
+    public function load($id): AggregateRoot
     {
         try {
             $domainEventStream = $this->eventStore->load($id);
@@ -70,22 +72,22 @@ class EventSourcingRepository implements Repository
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function save(AggregateRoot $aggregate)
+    public function save(AggregateRoot $aggregate): void
     {
         // maybe we can get generics one day.... ;)
         Assert::isInstanceOf($aggregate, $this->aggregateClass);
 
         $domainEventStream = $aggregate->getUncommittedEvents();
-        $eventStream       = $this->decorateForWrite($aggregate, $domainEventStream);
+        $eventStream = $this->decorateForWrite($aggregate, $domainEventStream);
         $this->eventStore->append($aggregate->getAggregateRootId(), $eventStream);
         $this->eventBus->publish($eventStream);
     }
 
-    private function decorateForWrite(AggregateRoot $aggregate, DomainEventStream $eventStream)
+    private function decorateForWrite(AggregateRoot $aggregate, DomainEventStream $eventStream): DomainEventStream
     {
-        $aggregateType       = $this->getType();
+        $aggregateType = get_class($aggregate);
         $aggregateIdentifier = $aggregate->getAggregateRootId();
 
         foreach ($this->eventStreamDecorators as $eventStreamDecorator) {
@@ -95,17 +97,12 @@ class EventSourcingRepository implements Repository
         return $eventStream;
     }
 
-    private function assertExtendsEventSourcedAggregateRoot($class)
+    private function assertExtendsEventSourcedAggregateRoot(string $class): void
     {
         Assert::subclassOf(
             $class,
             EventSourcedAggregateRoot::class,
             sprintf("Class '%s' is not an EventSourcedAggregateRoot.", $class)
         );
-    }
-
-    private function getType()
-    {
-        return $this->aggregateClass;
     }
 }

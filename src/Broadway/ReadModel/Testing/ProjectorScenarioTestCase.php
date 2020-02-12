@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel\Testing;
 
 use Broadway\ReadModel\InMemory\InMemoryRepository;
 use Broadway\ReadModel\Projector;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case that can be used to set up a projector scenario.
@@ -33,7 +35,7 @@ abstract class ProjectorScenarioTestCase extends TestCase
     /**
      * @return Scenario
      */
-    protected function createScenario()
+    protected function createScenario(): Scenario
     {
         $repository = new InMemoryRepository();
 
@@ -43,5 +45,5 @@ abstract class ProjectorScenarioTestCase extends TestCase
     /**
      * @return Projector
      */
-    abstract protected function createProjector(InMemoryRepository $repository);
+    abstract protected function createProjector(InMemoryRepository $repository): Projector;
 }

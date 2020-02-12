@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore;
 
 use Broadway\Domain\DomainMessage;
 
-class CallableEventVisitor implements EventVisitor
+final class CallableEventVisitor implements EventVisitor
 {
     /**
      * @var callable
@@ -25,7 +27,7 @@ class CallableEventVisitor implements EventVisitor
         $this->callable = $callable;
     }
 
-    public function doWithEvent(DomainMessage $domainMessage)
+    public function doWithEvent(DomainMessage $domainMessage): void
     {
         call_user_func($this->callable, $domainMessage);
     }

@@ -9,9 +9,12 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling;
 
-use Broadway\TestCase;
+use Broadway\CommandHandling\Exception\CommandNotAnObjectException;
+use PHPUnit\Framework\TestCase;
 
 class CommandHandlerTest extends TestCase
 {
@@ -21,7 +24,7 @@ class CommandHandlerTest extends TestCase
     public function it_delegates_command_to_proper_handle_function()
     {
         $commandHandler = new TestCommandHandler();
-        $command        = new CommandHandlerTestCommand();
+        $command = new CommandHandlerTestCommand();
         $commandHandler->handle($command);
 
         $this->assertTrue($commandHandler->handled);
@@ -35,7 +38,9 @@ class CommandHandlerTest extends TestCase
     public function handle_should_throw_exception_when_impossible_to_delegate_to_a_valid_method($command)
     {
         $commandHandler = new TestCommandHandler();
-        $this->setExpectedException('Broadway\CommandHandling\Exception\CommandNotAnObjectException');
+
+        $this->expectException(CommandNotAnObjectException::class);
+
         $commandHandler->handle($command);
     }
 
@@ -46,7 +51,7 @@ class CommandHandlerTest extends TestCase
             [false],
             ['foo'],
             [1],
-            [['foo', 'bar']]
+            [['foo', 'bar']],
         ];
     }
 }

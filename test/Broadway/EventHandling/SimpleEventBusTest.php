@@ -9,21 +9,27 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventHandling;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class SimpleEventBusTest extends TestCase
 {
+    /**
+     * @var SimpleEventBus
+     */
     private $eventBus;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->eventBus = new SimpleEventBus();
     }
+
     /**
      * @test
      */
@@ -138,9 +144,9 @@ class SimpleEventBusTest extends TestCase
         $this->eventBus->publish($domainEventStream2);
     }
 
-    private function createEventListenerMock()
+    private function createEventListenerMock(): \PHPUnit_Framework_MockObject_MockObject
     {
-        return $this->getMockBuilder('Broadway\EventHandling\EventListener')->getMock();
+        return $this->createMock(EventListener::class);
     }
 
     private function createDomainMessage($payload)
@@ -167,13 +173,13 @@ class SimpleEventBusTestListener implements EventListener
 
     public function __construct($eventBus, $publishableStream)
     {
-        $this->eventBus          = $eventBus;
+        $this->eventBus = $eventBus;
         $this->publishableStream = $publishableStream;
     }
 
-    public function handle(DomainMessage $domainMessage)
+    public function handle(DomainMessage $domainMessage): void
     {
-        if (! $this->handled) {
+        if (!$this->handled) {
             $this->eventBus->publish($this->publishableStream);
             $this->handled = true;
         }

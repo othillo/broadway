@@ -1,14 +1,22 @@
 <?php
 
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing\AggregateFactory;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
-/**
- *
- */
 final class ReflectionAggregateFactoryTest extends TestCase
 {
     /**
@@ -16,7 +24,7 @@ final class ReflectionAggregateFactoryTest extends TestCase
      */
     private $factory;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->factory = new ReflectionAggregateFactory();
     }
@@ -49,11 +57,12 @@ final class ReflectionAggregateFactoryTest extends TestCase
 
     /**
      * @test
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Impossible to initialize "stdClass"
      */
     public function it_does_not_handle_weird_classes()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage(sprintf('Impossible to initialize "%s"', \stdClass::class));
+
         $this->factory->create(\stdClass::class, new DomainEventStream([]));
     }
 }
@@ -65,9 +74,9 @@ final class TestAggregateWithPrivateConstructor extends EventSourcedAggregateRoo
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
         return 'foo42';
     }
@@ -76,9 +85,9 @@ final class TestAggregateWithPrivateConstructor extends EventSourcedAggregateRoo
 final class TestAggregateWithPublicConstructor extends EventSourcedAggregateRoot
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
         return 'foo42';
     }

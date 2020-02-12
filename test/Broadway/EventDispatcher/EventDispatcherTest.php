@@ -9,21 +9,34 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventDispatcher;
 
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class EventDispatcherTest extends TestCase
 {
+    /**
+     * @var CallableEventDispatcher
+     */
     private $dispatcher;
+
+    /**
+     * @var TracableEventListener
+     */
     private $listener1;
+
+    /**
+     * @var TracableEventListener
+     */
     private $listener2;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->dispatcher = new CallableEventDispatcher();
-        $this->listener1  = new TracableEventListener();
-        $this->listener2  = new TracableEventListener();
+        $this->listener1 = new TracableEventListener();
+        $this->listener2 = new TracableEventListener();
 
         $this->assertFalse($this->listener1->isCalled());
         $this->assertFalse($this->listener2->isCalled());

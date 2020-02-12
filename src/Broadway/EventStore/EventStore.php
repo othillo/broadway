@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore;
 
 use Broadway\Domain\DomainEventStream;
@@ -21,16 +23,14 @@ interface EventStore
 {
     /**
      * @param mixed $id
-     *
-     * @return DomainEventStream
      */
-    public function load($id);
+    public function load($id): DomainEventStream;
 
     /**
      * @param mixed $id
      * @param int   $playhead
      */
-    public function loadFromPlayhead($id, $playhead);
+    public function loadFromPlayhead($id, int $playhead): DomainEventStream;
 
     /**
      * @param mixed             $id
@@ -38,5 +38,5 @@ interface EventStore
      *
      * @throws DuplicatePlayheadException
      */
-    public function append($id, DomainEventStream $eventStream);
+    public function append($id, DomainEventStream $eventStream): void;
 }

@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Domain;
 
 /**
@@ -42,47 +44,47 @@ final class DomainMessage
     private $recordedOn;
 
     /**
-     * @param string   $id
+     * @param mixed    $id
      * @param int      $playhead
      * @param Metadata $metadata
      * @param mixed    $payload
      * @param DateTime $recordedOn
      */
-    public function __construct($id, $playhead, Metadata $metadata, $payload, DateTime $recordedOn)
+    public function __construct($id, int $playhead, Metadata $metadata, $payload, DateTime $recordedOn)
     {
-        $this->id         = $id;
-        $this->playhead   = $playhead;
-        $this->metadata   = $metadata;
-        $this->payload    = $payload;
+        $this->id = (string) $id;
+        $this->playhead = $playhead;
+        $this->metadata = $metadata;
+        $this->payload = $payload;
         $this->recordedOn = $recordedOn;
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * {@inheritDoc}
+     * @return int
      */
-    public function getPlayhead()
+    public function getPlayhead(): int
     {
         return $this->playhead;
     }
 
     /**
-     * {@inheritDoc}
+     * @return Metadata
      */
-    public function getMetadata()
+    public function getMetadata(): Metadata
     {
         return $this->metadata;
     }
 
     /**
-     * {@inheritDoc}
+     * @return mixed
      */
     public function getPayload()
     {
@@ -90,45 +92,41 @@ final class DomainMessage
     }
 
     /**
-     * {@inheritDoc}
+     * @return DateTime
      */
-    public function getRecordedOn()
+    public function getRecordedOn(): DateTime
     {
         return $this->recordedOn;
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return strtr(get_class($this->payload), '\\', '.');
     }
 
     /**
-     * @param string   $id
+     * @param mixed    $id
      * @param int      $playhead
      * @param Metadata $metadata
      * @param mixed    $payload
-     *
-     * @return DomainMessage
      */
-    public static function recordNow($id, $playhead, Metadata $metadata, $payload)
+    public static function recordNow($id, int $playhead, Metadata $metadata, $payload): self
     {
-        return new DomainMessage($id, $playhead, $metadata, $payload, DateTime::now());
+        return new self($id, $playhead, $metadata, $payload, DateTime::now());
     }
 
     /**
      * Creates a new DomainMessage with all things equal, except metadata.
      *
      * @param Metadata $metadata Metadata to add
-     *
-     * @return DomainMessage
      */
-    public function andMetadata(Metadata $metadata)
+    public function andMetadata(Metadata $metadata): self
     {
         $newMetadata = $this->metadata->merge($metadata);
 
-        return new DomainMessage($this->id, $this->playhead, $newMetadata, $this->payload, $this->recordedOn);
+        return new self($this->id, $this->playhead, $newMetadata, $this->payload, $this->recordedOn);
     }
 }

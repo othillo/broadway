@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel;
 
 /**
@@ -16,5 +18,5 @@ namespace Broadway\ReadModel;
  */
 interface Transferable
 {
-    public function transferTo(Repository $otherRepository);
+    public function transferTo(Repository $otherRepository): void;
 }

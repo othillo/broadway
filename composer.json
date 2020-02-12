@@ -4,9 +4,9 @@
     "keywords": ["cqrs", "event sourcing", "domain-driven design", "ddd"],
     "license": "MIT",
     "require": {
-        "beberlei/assert": "~2.0",
+        "beberlei/assert": "~3.0",
         "broadway/uuid-generator": "~0.4.0",
-        "php": ">=5.5.9"
+        "php": ">=7.1"
     },
     "authors": [
       {
@@ -35,10 +35,11 @@
       }
     ],
     "require-dev": {
-        "instaclick/base-test-bundle": "~0.5",
         "monolog/monolog": "~1.8",
-        "phpunit/phpunit": "^4.8",
-        "ramsey/uuid": "^3.0"
+        "phpunit/phpunit": "^6.0",
+        "ramsey/uuid": "^3.0",
+        "friendsofphp/php-cs-fixer": "^2.1",
+        "malukenho/docheader": "^0.1.7"
     },
     "suggest": {
         "psr/log-implementation": "Implementation for PSR3, LoggerInterface",
@@ -48,13 +49,18 @@
         "broadway/broadway-bundle": "Symfony bundle for broadway/broadway"
     },
     "autoload": {
-        "psr-0": {
-            "Broadway\\": "src/"
+        "psr-4": {
+            "Broadway\\": "src/Broadway/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Broadway\\": "test/Broadway/"
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "2.0.x-dev"
         }
     }
 }

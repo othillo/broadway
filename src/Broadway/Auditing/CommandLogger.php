@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Auditing;
 
 use Exception;
@@ -19,25 +21,25 @@ use Psr\Log\LoggerInterface;
  *
  * This object can be registered as an event listener.
  */
-class CommandLogger
+final class CommandLogger
 {
     private $logger;
     private $commandSerializer;
 
     public function __construct(LoggerInterface $logger, CommandSerializer $commandSerializer)
     {
-        $this->logger            = $logger;
+        $this->logger = $logger;
         $this->commandSerializer = $commandSerializer;
     }
 
     /**
      * @param mixed $command Command that was executed successfully
      */
-    public function onCommandHandlingSuccess($command)
+    public function onCommandHandlingSuccess($command): void
     {
         $messageData = [
-            'status'  => 'success',
-            'command' => $this->getCommandData($command)
+            'status' => 'success',
+            'command' => $this->getCommandData($command),
         ];
 
         $this->logger->info(json_encode($messageData));
@@ -47,28 +49,31 @@ class CommandLogger
      * @param mixed     $command   Command that errored
      * @param Exception $exception Exception that occured during the execution of the command
      */
-    public function onCommandHandlingFailure($command, Exception $exception)
+    public function onCommandHandlingFailure($command, Exception $exception): void
     {
         $messageData = [
-            'status'    => 'failure',
-            'command'   => $this->getCommandData($command),
+            'status' => 'failure',
+            'command' => $this->getCommandData($command),
             'exception' => [
                 'message' => $exception->getMessage(),
-                'file'    => $exception->getFile(),
-                'class'   => get_class($exception),
-                'line'    => $exception->getLine(),
-                'code'    => $exception->getCode()
-            ]
+                'file' => $exception->getFile(),
+                'class' => get_class($exception),
+                'line' => $exception->getLine(),
+                'code' => $exception->getCode(),
+            ],
         ];
 
         $this->logger->info(json_encode($messageData));
     }
 
-    private function getCommandData($command)
+    /**
+     * @param mixed $command
+     */
+    private function getCommandData($command): array
     {
         return [
             'class' => get_class($command),
-            'data'  => $this->commandSerializer->serialize($command),
+            'data' => $this->commandSerializer->serialize($command),
         ];
     }
 }

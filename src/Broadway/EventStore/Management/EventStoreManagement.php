@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore\Management;
 
 use Broadway\EventStore\EventVisitor;
 
 interface EventStoreManagement
 {
-    public function visitEvents(Criteria $criteria, EventVisitor $eventVisitor);
+    public function visitEvents(Criteria $criteria, EventVisitor $eventVisitor): void;
 }

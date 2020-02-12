@@ -9,33 +9,35 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling;
 
 /**
  * Simple synchronous dispatching of commands.
  */
-class SimpleCommandBus implements CommandBus
+final class SimpleCommandBus implements CommandBus
 {
     private $commandHandlers = [];
-    private $queue           = [];
-    private $isDispatching   = false;
+    private $queue = [];
+    private $isDispatching = false;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function subscribe(CommandHandler $handler)
+    public function subscribe(CommandHandler $handler): void
     {
         $this->commandHandlers[] = $handler;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function dispatch($command)
+    public function dispatch($command): void
     {
         $this->queue[] = $command;
 
-        if (! $this->isDispatching) {
+        if (!$this->isDispatching) {
             $this->isDispatching = true;
 
             try {
@@ -44,11 +46,8 @@ class SimpleCommandBus implements CommandBus
                         $handler->handle($command);
                     }
                 }
-
+            } finally {
                 $this->isDispatching = false;
-            } catch (\Exception $e) {
-                $this->isDispatching = false;
-                throw $e;
             }
         }
     }

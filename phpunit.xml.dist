@@ -9,11 +9,14 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="test/bootstrap.php"
+         bootstrap="vendor/autoload.php"
 >
   <testsuites>
     <testsuite name="Broadway Test Suite">
       <directory>./test/</directory>
+    </testsuite>
+    <testsuite name="Broadway Example Test Suite">
+      <directory>./examples/</directory>
     </testsuite>
   </testsuites>
   <filter>

@@ -1,6 +1,19 @@
 <?php
 
-require_once __DIR__ . '/../bootstrap.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+use Broadway\Serializer\Serializable;
+
+require_once __DIR__.'/../bootstrap.php';
 
 /**
  * Invitation aggregate root.
@@ -19,7 +32,7 @@ class Invitation extends Broadway\EventSourcing\EventSourcedAggregateRoot
      */
     public static function invite($invitationId, $name)
     {
-        $invitation = new Invitation();
+        $invitation = new self();
 
         // After instantiation of the object we apply the "InvitedEvent".
         $invitation->apply(new InvitedEvent($invitationId, $name));
@@ -30,9 +43,9 @@ class Invitation extends Broadway\EventSourcing\EventSourcedAggregateRoot
     /**
      * Every aggregate root will expose its id.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
         return $this->invitationId;
     }
@@ -123,17 +136,29 @@ class InvitationRepository extends Broadway\EventSourcing\EventSourcingRepositor
 abstract class InvitationCommand
 {
     public $invitationId;
+
     public function __construct($invitationId)
     {
         $this->invitationId = $invitationId;
     }
 }
-abstract class InvitationEvent
+abstract class InvitationEvent implements Serializable
 {
     public $invitationId;
+
     public function __construct($invitationId)
     {
         $this->invitationId = $invitationId;
+    }
+
+    public function serialize(): array
+    {
+        return ['invitationId' => $this->invitationId];
+    }
+
+    public static function deserialize(array $eventData)
+    {
+        return new static($eventData['invitationId']);
     }
 }
 
@@ -141,6 +166,7 @@ abstract class InvitationEvent
 class InviteCommand extends InvitationCommand
 {
     public $name;
+
     public function __construct($invitationId, $name)
     {
         parent::__construct($invitationId);
@@ -152,11 +178,28 @@ class InviteCommand extends InvitationCommand
 class InvitedEvent extends InvitationEvent
 {
     public $name;
+
     public function __construct($invitationId, $name)
     {
         parent::__construct($invitationId);
 
         $this->name = $name;
+    }
+
+    public function serialize(): array
+    {
+        return [
+            'invitationId' => $this->invitationId,
+            'name' => $this->name,
+        ];
+    }
+
+    public static function deserialize(array $eventData)
+    {
+        $event = new static($eventData['invitationId']);
+        $event->name = $eventData['name'];
+
+        return $event;
     }
 }
 

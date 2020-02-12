@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing;
 
 use Broadway\Domain\AggregateRoot as AggregateRootInterface;
@@ -25,18 +27,18 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
      * @var array
      */
     private $uncommittedEvents = [];
-    private $playhead          = -1; // 0-based playhead allows events[0] to contain playhead 0
+    private $playhead = -1; // 0-based playhead allows events[0] to contain playhead 0
 
     /**
      * Applies an event. The event is added to the AggregateRoot's list of uncommitted events.
      *
-     * @param $event
+     * @param mixed $event
      */
-    public function apply($event)
+    public function apply($event): void
     {
         $this->handleRecursively($event);
 
-        $this->playhead++;
+        ++$this->playhead;
         $this->uncommittedEvents[] = DomainMessage::recordNow(
             $this->getAggregateRootId(),
             $this->playhead,
@@ -46,9 +48,9 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getUncommittedEvents()
+    public function getUncommittedEvents(): DomainEventStream
     {
         $stream = new DomainEventStream($this->uncommittedEvents);
 
@@ -60,10 +62,10 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
     /**
      * Initializes the aggregate using the given "history" of events.
      */
-    public function initializeState(DomainEventStream $stream)
+    public function initializeState(DomainEventStream $stream): void
     {
         foreach ($stream as $message) {
-            $this->playhead++;
+            ++$this->playhead;
             $this->handleRecursively($message->getPayload());
         }
     }
@@ -71,13 +73,13 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
     /**
      * Handles event if capable.
      *
-     * @param $event
+     * @param mixed $event
      */
-    protected function handle($event)
+    protected function handle($event): void
     {
         $method = $this->getApplyMethod($event);
 
-        if (! method_exists($this, $method)) {
+        if (!method_exists($this, $method)) {
             return;
         }
 
@@ -85,9 +87,9 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param mixed $event
      */
-    protected function handleRecursively($event)
+    protected function handleRecursively($event): void
     {
         $this->handle($event);
 
@@ -98,28 +100,28 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
     }
 
     /**
-     * Returns all child entities
+     * Returns all child entities.
      *
      * Override this method if your aggregate root contains child entities.
      *
      * @return EventSourcedEntity[]
      */
-    protected function getChildEntities()
+    protected function getChildEntities(): array
     {
         return [];
     }
 
-    private function getApplyMethod($event)
+    /**
+     * @param mixed $event
+     */
+    private function getApplyMethod($event): string
     {
         $classParts = explode('\\', get_class($event));
 
-        return 'apply' . end($classParts);
+        return 'apply'.end($classParts);
     }
 
-    /**
-     * @return int
-     */
-    public function getPlayhead()
+    public function getPlayhead(): int
     {
         return $this->playhead;
     }

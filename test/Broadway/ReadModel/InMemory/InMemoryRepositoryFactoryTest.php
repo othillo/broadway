@@ -9,9 +9,11 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel\InMemory;
 
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class InMemoryRepositoryFactoryTest extends TestCase
 {
@@ -21,7 +23,7 @@ class InMemoryRepositoryFactoryTest extends TestCase
     public function it_creates_an_in_memory_repository()
     {
         $repository = new InMemoryRepository();
-        $factory    = new InMemoryRepositoryFactory();
+        $factory = new InMemoryRepositoryFactory();
 
         $this->assertEquals($repository, $factory->create('test', 'class'));
     }

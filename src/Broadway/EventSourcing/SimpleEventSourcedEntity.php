@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing;
 
 /**
@@ -22,9 +24,9 @@ abstract class SimpleEventSourcedEntity implements EventSourcedEntity
     private $aggregateRoot;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function handleRecursively($event)
+    public function handleRecursively($event): void
     {
         $this->handle($event);
 
@@ -35,9 +37,9 @@ abstract class SimpleEventSourcedEntity implements EventSourcedEntity
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function registerAggregateRoot(EventSourcedAggregateRoot $aggregateRoot)
+    public function registerAggregateRoot(EventSourcedAggregateRoot $aggregateRoot): void
     {
         if (null !== $this->aggregateRoot && $this->aggregateRoot !== $aggregateRoot) {
             throw new AggregateRootAlreadyRegisteredException();
@@ -46,7 +48,10 @@ abstract class SimpleEventSourcedEntity implements EventSourcedEntity
         $this->aggregateRoot = $aggregateRoot;
     }
 
-    protected function apply($event)
+    /**
+     * @param mixed $event
+     */
+    protected function apply($event): void
     {
         $this->aggregateRoot->apply($event);
     }
@@ -54,13 +59,13 @@ abstract class SimpleEventSourcedEntity implements EventSourcedEntity
     /**
      * Handles event if capable.
      *
-     * @param $event
+     * @param mixed $event
      */
-    protected function handle($event)
+    protected function handle($event): void
     {
         $method = $this->getApplyMethod($event);
 
-        if (! method_exists($this, $method)) {
+        if (!method_exists($this, $method)) {
             return;
         }
 
@@ -68,19 +73,22 @@ abstract class SimpleEventSourcedEntity implements EventSourcedEntity
     }
 
     /**
-     * Returns all child entities
+     * Returns all child entities.
      *
      * @return EventSourcedEntity[]
      */
-    protected function getChildEntities()
+    protected function getChildEntities(): array
     {
         return [];
     }
 
-    private function getApplyMethod($event)
+    /**
+     * @param mixed $event
+     */
+    private function getApplyMethod($event): string
     {
         $classParts = explode('\\', get_class($event));
 
-        return 'apply' . end($classParts);
+        return 'apply'.end($classParts);
     }
 }

@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore;
 
 use Broadway\Domain\DomainEventStream;
@@ -17,11 +19,11 @@ use Broadway\Domain\DomainMessage;
 /**
  * Event store that is able to record all appended events.
  */
-class TraceableEventStore implements EventStore
+final class TraceableEventStore implements EventStore
 {
     private $eventStore;
     private $recorded = [];
-    private $tracing  = false;
+    private $tracing = false;
 
     public function __construct(EventStore $eventStore)
     {
@@ -29,13 +31,13 @@ class TraceableEventStore implements EventStore
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function append($id, DomainEventStream $eventStream)
+    public function append($id, DomainEventStream $eventStream): void
     {
         $this->eventStore->append($id, $eventStream);
 
-        if (! $this->tracing) {
+        if (!$this->tracing) {
             return;
         }
 
@@ -45,9 +47,9 @@ class TraceableEventStore implements EventStore
     }
 
     /**
-     * @return array Appended events
+     * @return mixed[] Appended events
      */
-    public function getEvents()
+    public function getEvents(): array
     {
         return array_map(
             function (DomainMessage $message) {
@@ -58,17 +60,17 @@ class TraceableEventStore implements EventStore
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function load($id)
+    public function load($id): DomainEventStream
     {
         return $this->eventStore->load($id);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function loadFromPlayhead($id, $playhead)
+    public function loadFromPlayhead($id, int $playhead): DomainEventStream
     {
         return $this->eventStore->loadFromPlayhead($id, $playhead);
     }
@@ -76,7 +78,7 @@ class TraceableEventStore implements EventStore
     /**
      * Start tracing.
      */
-    public function trace()
+    public function trace(): void
     {
         $this->tracing = true;
     }
@@ -84,7 +86,7 @@ class TraceableEventStore implements EventStore
     /**
      * Clear any previously recorded events.
      */
-    public function clearEvents()
+    public function clearEvents(): void
     {
         $this->recorded = [];
     }

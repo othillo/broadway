@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventHandling;
 
 use Broadway\Domain\DomainMessage;
@@ -18,8 +20,5 @@ use Broadway\Domain\DomainMessage;
  */
 interface EventListener
 {
-    /**
-     * @param DomainMessage $domainMessage
-     */
-    public function handle(DomainMessage $domainMessage);
+    public function handle(DomainMessage $domainMessage): void;
 }

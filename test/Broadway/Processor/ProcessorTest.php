@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Processor;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ProcessorTest extends TestCase
 {
@@ -23,7 +25,7 @@ class ProcessorTest extends TestCase
     public function it_passes_the_event_and_domain_message()
     {
         $testProcessor = new TestProcessor();
-        $testEvent     = new TestEvent();
+        $testEvent = new TestEvent();
 
         $this->assertFalse($testProcessor->isCalled());
 

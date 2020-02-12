@@ -1,6 +1,17 @@
 <?php
 
-require_once __DIR__ . '/../bootstrap.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+require_once __DIR__.'/../bootstrap.php';
 
 /*
  * Some setup and helpers. Real example below. ;)
@@ -40,14 +51,14 @@ class ExampleFailureCommand extends BaseCommand
 }
 
 // Setup the system to handle commands
-$commandHandler   = new ExampleCommandHandler();
-$eventDispatcher  = new Broadway\EventDispatcher\CallableEventDispatcher();
+$commandHandler = new ExampleCommandHandler();
+$eventDispatcher = new Broadway\EventDispatcher\CallableEventDispatcher();
 $simpleCommandBus = new Broadway\CommandHandling\SimpleCommandBus();
-$commandBus       = new Broadway\CommandHandling\EventDispatchingCommandBus($simpleCommandBus, $eventDispatcher);
+$commandBus = new Broadway\CommandHandling\EventDispatchingCommandBus($simpleCommandBus, $eventDispatcher);
 $commandBus->subscribe($commandHandler);
 
 // Dependencies of auditing logger
-$logger            = new StdoutLogger();
+$logger = new StdoutLogger();
 $commandSerializer = new Broadway\Auditing\NullByteCommandSerializer();
 
 /*
@@ -58,8 +69,8 @@ $commandSerializer = new Broadway\Auditing\NullByteCommandSerializer();
 $commandAuditLogger = new Broadway\Auditing\CommandLogger($logger, $commandSerializer);
 
 // register the command logger with the event dispatcher of the command bus
-$eventDispatcher->addListener("broadway.command_handling.command_success", [$commandAuditLogger, "onCommandHandlingSuccess"]);
-$eventDispatcher->addListener("broadway.command_handling.command_failure", [$commandAuditLogger, "onCommandHandlingFailure"]);
+$eventDispatcher->addListener('broadway.command_handling.command_success', [$commandAuditLogger, 'onCommandHandlingSuccess']);
+$eventDispatcher->addListener('broadway.command_handling.command_failure', [$commandAuditLogger, 'onCommandHandlingFailure']);
 
 echo "Dispatching the command that will succeed.\n";
 $command = new ExampleCommand('Hi from command!');

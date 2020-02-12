@@ -9,7 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Broadway\EventStore\Management;
+declare(strict_types=1);
+
+namespace Broadway\EventStore\Management\Testing;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
@@ -17,8 +19,10 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventStore\EventStore;
 use Broadway\EventStore\EventVisitor;
+use Broadway\EventStore\Management\Criteria;
+use Broadway\EventStore\Management\CriteriaNotSupportedException;
 use Broadway\Serializer\Serializable;
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 abstract class EventStoreManagementTest extends TestCase
 {
@@ -32,9 +36,9 @@ abstract class EventStoreManagementTest extends TestCase
      */
     protected $now;
 
-    public function setUp()
+    protected function setUp()
     {
-        $this->now        = DateTime::now();
+        $this->now = DateTime::now();
         $this->eventStore = $this->createEventStore();
         $this->createAndInsertEventFixtures();
         $this->eventVisitor = new RecordingEventVisitor();
@@ -88,8 +92,8 @@ abstract class EventStoreManagementTest extends TestCase
     {
         $visitedEvents = $this->visitEvents(Criteria::create()
             ->withEventTypes([
-                'Broadway.EventStore.Management.Start',
-                'Broadway.EventStore.Management.End',
+                'Broadway.EventStore.Management.Testing.Start',
+                'Broadway.EventStore.Management.Testing.End',
             ])
         );
 
@@ -107,14 +111,15 @@ abstract class EventStoreManagementTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Broadway\EventStore\Management\CriteriaNotSupportedException
      */
     public function it_visits_aggregate_root_types()
     {
-        $visitedEvents = $this->visitEvents(Criteria::create()
+        $this->expectException(CriteriaNotSupportedException::class);
+
+        $this->visitEvents(Criteria::create()
             ->withAggregateRootTypes([
-                'Broadway.EventStore.Management.AggregateTypeOne',
-                'Broadway.EventStore.Management.AggregateTypeTwo',
+                'Broadway.EventStore.Management.Testing.AggregateTypeOne',
+                'Broadway.EventStore.Management.Testing.AggregateTypeTwo',
             ])
         );
     }
@@ -167,18 +172,16 @@ abstract class EventStoreManagementTest extends TestCase
         ];
     }
 
-    private function createDomainMessage($id, $playhead, $event)
+    private function createDomainMessage($id, int $playhead, $event)
     {
         $id = $this->getId($id);
 
-        return new DomainMessage((string) $id, (string) $playhead, new Metadata([]), $event, $this->now);
+        return new DomainMessage((string) $id, $playhead, new Metadata([]), $event, $this->now);
     }
 
-    private function getId($id)
+    private function getId($id): string
     {
-        $uuid = sprintf('%08d-%04d-4%03d-%04d-%012d', $id, $id, $id, $id, $id);
-
-        return $uuid;
+        return sprintf('%08d-%04d-4%03d-%04d-%012d', $id, $id, $id, $id, $id);
     }
 
     private function assertVisitedEventsArEquals(array $expectedEvents, array $actualEvents)
@@ -197,13 +200,13 @@ abstract class EventStoreManagementTest extends TestCase
         $eventsByAggregateTypeAndId = [];
         foreach ($events as $event) {
             $type = $event->getType();
-            $id   = $event->getId();
+            $id = $event->getId();
 
-            if (! array_key_exists($type, $eventsByAggregateTypeAndId)) {
+            if (!array_key_exists($type, $eventsByAggregateTypeAndId)) {
                 $eventsByAggregateTypeAndId[$type] = [];
             }
 
-            if (! array_key_exists($id, $eventsByAggregateTypeAndId[$type])) {
+            if (!array_key_exists($id, $eventsByAggregateTypeAndId[$type])) {
                 $eventsByAggregateTypeAndId[$type][$id] = [];
             }
 
@@ -221,7 +224,7 @@ class RecordingEventVisitor implements EventVisitor
      */
     private $visitedEvents;
 
-    public function doWithEvent(DomainMessage $domainMessage)
+    public function doWithEvent(DomainMessage $domainMessage): void
     {
         $this->visitedEvents[] = $domainMessage;
     }
@@ -244,7 +247,7 @@ class Event implements Serializable
         return new static();
     }
 
-    public function serialize()
+    public function serialize(): array
     {
         return [];
     }
@@ -257,6 +260,7 @@ class Start extends Event
 class Middle extends Event
 {
     public $position;
+
     public function __construct($position)
     {
         $this->position = $position;
@@ -267,7 +271,7 @@ class Middle extends Event
         return new static($data['position']);
     }
 
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'position' => $this->position,

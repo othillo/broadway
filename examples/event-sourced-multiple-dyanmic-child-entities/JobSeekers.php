@@ -1,9 +1,20 @@
 <?php
 
-require_once __DIR__ . '/../bootstrap.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+require_once __DIR__.'/../bootstrap.php';
 
 /**
- * JobSeeker aggregate root
+ * JobSeeker aggregate root.
  */
 class JobSeeker extends Broadway\EventSourcing\EventSourcedAggregateRoot
 {
@@ -15,7 +26,7 @@ class JobSeeker extends Broadway\EventSourcing\EventSourcedAggregateRoot
      */
     public static function startLookingForWork($jobSeekerId)
     {
-        $jobSeeker = new JobSeeker();
+        $jobSeeker = new self();
 
         // After instantiation of the object we apply the "JobSeekerStartedLookingForWorkEvent".
         $jobSeeker->apply(new JobSeekerStartedLookingForWorkEvent($jobSeekerId));
@@ -28,7 +39,7 @@ class JobSeeker extends Broadway\EventSourcing\EventSourcedAggregateRoot
      *
      * @return string
      */
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
         return $this->jobSeekerId;
     }
@@ -48,7 +59,7 @@ class JobSeeker extends Broadway\EventSourcing\EventSourcedAggregateRoot
 
     public function describeJob($jobId, $title, $description)
     {
-        if (! array_key_exists($jobId, $this->jobs)) {
+        if (!array_key_exists($jobId, $this->jobs)) {
             throw new \InvalidArgumentException("Job {$jobId} is not assigned to this job seeker.");
         }
         $this->jobs[$jobId]->describe($title, $description);
@@ -75,7 +86,7 @@ class JobSeeker extends Broadway\EventSourcing\EventSourcedAggregateRoot
         unset($this->jobs[$event->jobId]);
     }
 
-    protected function getChildEntities()
+    protected function getChildEntities(): array
     {
         return $this->jobs;
     }
@@ -91,8 +102,8 @@ class Job extends Broadway\EventSourcing\SimpleEventSourcedEntity
     public function __construct($jobSeekerId, $jobId, $title, $description)
     {
         $this->jobSeekerId = $jobSeekerId;
-        $this->jobId       = $jobId;
-        $this->title       = $title;
+        $this->jobId = $jobId;
+        $this->title = $title;
         $this->description = $description;
     }
 
@@ -120,7 +131,7 @@ class Job extends Broadway\EventSourcing\SimpleEventSourcedEntity
             return;
         }
 
-        $this->title       = $event->title;
+        $this->title = $event->title;
         $this->description = $event->description;
     }
 }
@@ -155,8 +166,8 @@ class AddJobToJobSeekerCommand
     public function __construct($jobSeekerId, $jobId, $title, $description)
     {
         $this->jobSeekerId = $jobSeekerId;
-        $this->jobId       = $jobId;
-        $this->title       = $title;
+        $this->jobId = $jobId;
+        $this->title = $title;
         $this->description = $description;
     }
 }
@@ -171,8 +182,8 @@ class JobWasAddedToJobSeekerEvent
     public function __construct($jobSeekerId, $jobId, $title, $description)
     {
         $this->jobSeekerId = $jobSeekerId;
-        $this->jobId       = $jobId;
-        $this->title       = $title;
+        $this->jobId = $jobId;
+        $this->title = $title;
         $this->description = $description;
     }
 }
@@ -187,8 +198,8 @@ class DescribeJobForJobSeekerCommand
     public function __construct($jobSeekerId, $jobId, $title, $description)
     {
         $this->jobSeekerId = $jobSeekerId;
-        $this->jobId       = $jobId;
-        $this->title       = $title;
+        $this->jobId = $jobId;
+        $this->title = $title;
         $this->description = $description;
     }
 }
@@ -203,8 +214,8 @@ class JobWasDescribedForJobSeekerEvent
     public function __construct($jobSeekerId, $jobId, $title, $description)
     {
         $this->jobSeekerId = $jobSeekerId;
-        $this->jobId       = $jobId;
-        $this->title       = $title;
+        $this->jobId = $jobId;
+        $this->title = $title;
         $this->description = $description;
     }
 }
@@ -217,7 +228,7 @@ class RemoveAccidentallyAddedJobFromJobSeekerCommand
     public function __construct($jobSeekerId, $jobId)
     {
         $this->jobSeekerId = $jobSeekerId;
-        $this->jobId       = $jobId;
+        $this->jobId = $jobId;
     }
 }
 
@@ -229,7 +240,7 @@ class AccidentallyAddedJobWasRemovedFromJobSeekerEvent
     public function __construct($jobSeekerId, $jobId)
     {
         $this->jobSeekerId = $jobSeekerId;
-        $this->jobId       = $jobId;
+        $this->jobId = $jobId;
     }
 }
 

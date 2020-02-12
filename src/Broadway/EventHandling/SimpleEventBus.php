@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventHandling;
 
 use Broadway\Domain\DomainEventStream;
@@ -16,30 +18,30 @@ use Broadway\Domain\DomainEventStream;
 /**
  * Simple synchronous publishing of events.
  */
-class SimpleEventBus implements EventBus
+final class SimpleEventBus implements EventBus
 {
     private $eventListeners = [];
-    private $queue          = [];
-    private $isPublishing   = false;
+    private $queue = [];
+    private $isPublishing = false;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function subscribe(EventListener $eventListener)
+    public function subscribe(EventListener $eventListener): void
     {
         $this->eventListeners[] = $eventListener;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function publish(DomainEventStream $domainMessages)
+    public function publish(DomainEventStream $domainMessages): void
     {
         foreach ($domainMessages as $domainMessage) {
             $this->queue[] = $domainMessage;
         }
 
-        if (! $this->isPublishing) {
+        if (!$this->isPublishing) {
             $this->isPublishing = true;
 
             try {

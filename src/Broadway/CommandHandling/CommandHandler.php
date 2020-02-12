@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling;
 
 /**
@@ -19,5 +21,5 @@ interface CommandHandler
     /**
      * @param mixed $command
      */
-    public function handle($command);
+    public function handle($command): void;
 }

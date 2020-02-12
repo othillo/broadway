@@ -9,15 +9,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Broadway\EventStore;
+declare(strict_types=1);
+
+namespace Broadway\EventStore\Testing;
 
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use Broadway\EventStore\EventStreamNotFoundException;
+use Broadway\EventStore\Exception\DuplicatePlayheadException;
 use Broadway\Serializer\Serializable;
-use Broadway\TestCase;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use PHPUnit\Framework\Error\Error;
+use PHPUnit\Framework\TestCase;
 
 abstract class EventStoreTest extends TestCase
 {
@@ -48,7 +53,7 @@ abstract class EventStoreTest extends TestCase
      */
     public function it_appends_to_an_already_existing_stream($id)
     {
-        $dateTime          = DateTime::fromString('2014-03-12T14:17:19.176169+00:00');
+        $dateTime = DateTime::fromString('2014-03-12T14:17:19.176169+00:00');
         $domainEventStream = new DomainEventStream([
             $this->createDomainMessage($id, 0, $dateTime),
             $this->createDomainMessage($id, 1, $dateTime),
@@ -59,7 +64,6 @@ abstract class EventStoreTest extends TestCase
             $this->createDomainMessage($id, 3, $dateTime),
             $this->createDomainMessage($id, 4, $dateTime),
             $this->createDomainMessage($id, 5, $dateTime),
-
         ]);
 
         $this->eventStore->append($id, $appendedEventStream);
@@ -78,32 +82,30 @@ abstract class EventStoreTest extends TestCase
     /**
      * @test
      * @dataProvider idDataProvider
-     * @expectedException \Broadway\EventStore\EventStreamNotFoundException
      */
     public function it_throws_an_exception_when_requesting_the_stream_of_a_non_existing_aggregate($id)
     {
+        $this->expectException(EventStreamNotFoundException::class);
+
         $this->eventStore->load($id);
     }
 
     /**
      * @test
      * @dataProvider idDataProvider
-     * @expectedException Broadway\EventStore\Exception\DuplicatePlayheadException
      */
     public function it_throws_an_exception_when_appending_a_duplicate_playhead($id)
     {
-        $domainMessage     = $this->createDomainMessage($id, 0);
-        $baseStream        = new DomainEventStream([$domainMessage]);
-        $this->eventStore->append($id, $baseStream);
-        $appendedEventStream = new DomainEventStream([$domainMessage]);
+        $eventStream = new DomainEventStream([$this->createDomainMessage($id, 0)]);
 
-        $this->eventStore->append($id, $appendedEventStream);
+        $this->expectException(DuplicatePlayheadException::class);
+
+        $this->eventStore->append($id, $eventStream);
+        $this->eventStore->append($id, $eventStream);
     }
 
     /**
      * @test
-     * @expectedException PHPUnit_Framework_Error
-     * @expectedExceptionMessage Object of class Broadway\EventStore\IdentityThatCannotBeConvertedToAString could not be converted to string
      */
     public function it_throws_an_exception_when_an_id_cannot_be_converted_to_a_string()
     {
@@ -111,14 +113,13 @@ abstract class EventStoreTest extends TestCase
             'Yolntbyaac' //You only live nine times because you are a cat
         );
 
-        $domainEventStream = new DomainEventStream([
-            $this->createDomainMessage($id, 0),
-            $this->createDomainMessage($id, 1),
-            $this->createDomainMessage($id, 2),
-            $this->createDomainMessage($id, 3),
-        ]);
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(
+            'Object of class %s could not be converted to string',
+            IdentityThatCannotBeConvertedToAString::class
+        ));
 
-        $this->eventStore->append($id, $domainEventStream);
+        $this->eventStore->append($id, new DomainEventStream([]));
     }
 
     /**
@@ -127,7 +128,7 @@ abstract class EventStoreTest extends TestCase
      */
     public function it_loads_events_starting_from_a_given_playhead($id)
     {
-        $dateTime          = DateTime::fromString('2014-03-12T14:17:19.176169+00:00');
+        $dateTime = DateTime::fromString('2014-03-12T14:17:19.176169+00:00');
         $domainEventStream = new DomainEventStream([
             $this->createDomainMessage($id, 0, $dateTime),
             $this->createDomainMessage($id, 1, $dateTime),
@@ -181,7 +182,7 @@ abstract class EventStoreTest extends TestCase
         ];
     }
 
-    protected function createDomainMessage($id, $playhead, $recordedOn = null)
+    protected function createDomainMessage($id, int $playhead, DateTime $recordedOn = null)
     {
         return new DomainMessage($id, $playhead, new MetaData([]), new Event(), $recordedOn ? $recordedOn : DateTime::now());
     }
@@ -191,10 +192,10 @@ class Event implements Serializable
 {
     public static function deserialize(array $data)
     {
-        return new Event();
+        return new self();
     }
 
-    public function serialize()
+    public function serialize(): array
     {
         return [];
     }
@@ -203,6 +204,7 @@ class Event implements Serializable
 class StringIdentity
 {
     private $id;
+
     public function __construct($id)
     {
         $this->id = $id;
@@ -217,6 +219,7 @@ class StringIdentity
 class IdentityThatCannotBeConvertedToAString
 {
     private $id;
+
     public function __construct($id)
     {
         $this->id = $id;

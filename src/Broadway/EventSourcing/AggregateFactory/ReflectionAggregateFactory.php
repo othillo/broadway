@@ -1,5 +1,16 @@
 <?php
 
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing\AggregateFactory;
 
 use Broadway\Domain\DomainEventStream;
@@ -13,9 +24,9 @@ use ReflectionClass;
 final class ReflectionAggregateFactory implements AggregateFactory
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function create($aggregateClass, DomainEventStream $domainEventStream)
+    public function create(string $aggregateClass, DomainEventStream $domainEventStream): EventSourcedAggregateRoot
     {
         $class = new ReflectionClass($aggregateClass);
         $aggregate = $class->newInstanceWithoutConstructor();

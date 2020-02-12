@@ -1,6 +1,19 @@
 <?php
 
-require_once __DIR__ . '/Parts.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+use Broadway\CommandHandling\CommandHandler;
+
+require_once __DIR__.'/Parts.php';
 
 /**
  * We drive the tests of our aggregate root through the command handler.
@@ -22,7 +35,7 @@ class PartsCommandHandlerTest extends Broadway\CommandHandling\Testing\CommandHa
         $this->generator = new Broadway\UuidGenerator\Rfc4122\Version4Generator();
     }
 
-    protected function createCommandHandler(Broadway\EventStore\EventStore $eventStore, Broadway\EventHandling\EventBus $eventBus)
+    protected function createCommandHandler(Broadway\EventStore\EventStore $eventStore, Broadway\EventHandling\EventBus $eventBus): CommandHandler
     {
         $repository = new PartRepository($eventStore, $eventBus);
 

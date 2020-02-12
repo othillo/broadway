@@ -9,9 +9,11 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing;
 
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class SimpleEventSourcedEntityTest extends TestCase
 {
@@ -21,11 +23,14 @@ class SimpleEventSourcedEntityTest extends TestCase
     public function it_handles_events_recursively()
     {
         $aggregateRoot = new Aggregate();
-        $child         = new Entity();
+        $child = new Entity();
 
         $aggregateRoot->addChildEntity($child);
 
-        $mock = $this->getMock('Broadway\EventSourcing\Entity', ['handleRecursively']);
+        $mock = $this->getMockBuilder('Broadway\EventSourcing\Entity')
+            ->setMethods(['handleRecursively'])
+            ->getMock();
+
         $mock->expects($this->once())
             ->method('handleRecursively');
 
@@ -39,12 +44,15 @@ class SimpleEventSourcedEntityTest extends TestCase
      */
     public function it_applies_events_to_aggregate_root()
     {
-        $aggregateRoot = $this->getMock('Broadway\EventSourcing\Aggregate', ['apply']);
+        $aggregateRoot = $this->getMockBuilder('Broadway\EventSourcing\Aggregate')
+            ->setMethods(['apply'])
+            ->getMock();
+
         $aggregateRoot->expects($this->once())
             ->method('apply');
 
-        $child         = new Entity();
-        $grandChild    = new Entity();
+        $child = new Entity();
+        $grandChild = new Entity();
 
         $aggregateRoot->addChildEntity($child);
 
@@ -56,7 +64,6 @@ class SimpleEventSourcedEntityTest extends TestCase
 
     /**
      * @test
-     * @expectedException Broadway\EventSourcing\AggregateRootAlreadyRegisteredException
      */
     public function it_can_only_have_one_root()
     {
@@ -68,6 +75,8 @@ class SimpleEventSourcedEntityTest extends TestCase
         $root1->addChildEntity($entity);
         $root2->addChildEntity($entity);
 
+        $this->expectException(AggregateRootAlreadyRegisteredException::class);
+
         $root1->doHandleRecursively();
         $root2->doHandleRecursively();
     }
@@ -77,7 +86,7 @@ class Aggregate extends EventSourcedAggregateRoot
 {
     private $children = [];
 
-    protected function getChildEntities()
+    protected function getChildEntities(): array
     {
         return $this->children;
     }
@@ -97,8 +106,9 @@ class Aggregate extends EventSourcedAggregateRoot
         $this->handleRecursively(new Event());
     }
 
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
+        return '42';
     }
 }
 
@@ -106,7 +116,7 @@ class Entity extends SimpleEventSourcedEntity
 {
     private $children = [];
 
-    protected function getChildEntities()
+    protected function getChildEntities(): array
     {
         return $this->children;
     }

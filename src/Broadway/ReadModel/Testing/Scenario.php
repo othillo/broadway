@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel\Testing;
 
 use Broadway\Domain\DateTime;
@@ -16,7 +18,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListener;
 use Broadway\ReadModel\Repository;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Helper testing scenario to test projects.
@@ -38,51 +40,38 @@ class Scenario
     private $dateTimeGenerator;
 
     public function __construct(
-        PHPUnit_Framework_TestCase $testCase,
+        TestCase $testCase,
         Repository $repository,
         EventListener $projector
     ) {
-        $this->testCase          = $testCase;
-        $this->repository        = $repository;
-        $this->projector         = $projector;
-        $this->playhead          = -1;
-        $this->aggregateId       = 1;
-        $this->dateTimeGenerator = function($event) {
+        $this->testCase = $testCase;
+        $this->repository = $repository;
+        $this->projector = $projector;
+        $this->playhead = -1;
+        $this->aggregateId = '1';
+        $this->dateTimeGenerator = function ($event) {
             return DateTime::now();
         };
     }
 
-    /**
-     * @param string $aggregateId
-     *
-     * @return Scenario
-     */
-    public function withAggregateId($aggregateId)
+    public function withAggregateId(string $aggregateId): self
     {
         $this->aggregateId = $aggregateId;
 
         return $this;
     }
 
-    /**
-     * @return Scenario
-     */
-    public function withDateTimeGenerator(callable $dateTimeGenerator)
+    public function withDateTimeGenerator(callable $dateTimeGenerator): self
     {
         $this->dateTimeGenerator = $dateTimeGenerator;
 
         return $this;
     }
 
-    /**
-     * @param array $events
-     *
-     * @return Scenario
-     */
-    public function given(array $events = [])
+    public function given(array $events = []): self
     {
         foreach ($events as $given) {
-            $this->projector->handle($this->createDomainMessageForEvent($given));
+            $this->projector->handle($this->createDomainMessageForEvent($given, null));
         }
 
         return $this;
@@ -90,35 +79,32 @@ class Scenario
 
     /**
      * @param mixed $event
-     *
-     * @return Scenario
      */
-    public function when($event, DateTime $occurredOn = null)
+    public function when($event, DateTime $occurredOn = null): self
     {
         $this->projector->handle($this->createDomainMessageForEvent($event, $occurredOn));
 
         return $this;
     }
 
-    /**
-     * @param array $expectedData
-     *
-     * @return Scenario
-     */
-    public function then(array $expectedData)
+    public function then(array $expectedData): self
     {
         $this->testCase->assertEquals($expectedData, $this->repository->findAll());
 
         return $this;
     }
 
-    private function createDomainMessageForEvent($event, DateTime $occurredOn = null)
+    /**
+     * @param mixed     $event
+     * @param ?DateTime $occurredOn
+     */
+    private function createDomainMessageForEvent($event, ?DateTime $occurredOn): DomainMessage
     {
-        $this->playhead++;
+        ++$this->playhead;
 
         if (null === $occurredOn) {
             $dateTimeGenerator = $this->dateTimeGenerator;
-            $occurredOn        = $dateTimeGenerator($event);
+            $occurredOn = $dateTimeGenerator($event);
         }
 
         return new DomainMessage($this->aggregateId, $this->playhead, new Metadata([]), $event, $occurredOn);

@@ -1,4 +1,16 @@
 <?php
+
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Broadway\EventStore;
 
 use Broadway\Domain\DomainEventStream;
@@ -6,7 +18,7 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventStore\ConcurrencyConflictResolver\ConcurrencyConflictResolver;
 use Broadway\EventStore\Exception\DuplicatePlayheadException;
 
-class ConcurrencyConflictResolvingEventStore implements EventStore
+final class ConcurrencyConflictResolvingEventStore implements EventStore
 {
     /** @var EventStore */
     private $eventStore;
@@ -14,31 +26,25 @@ class ConcurrencyConflictResolvingEventStore implements EventStore
     /** @var ConcurrencyConflictResolver */
     private $conflictResolver;
 
-    /**
-     * ConcurrencyConflictResolvingEventStore constructor.
-     *
-     * @param EventStore                  $eventStore
-     * @param ConcurrencyConflictResolver $conflictResolver
-     */
     public function __construct(EventStore $eventStore, ConcurrencyConflictResolver $conflictResolver)
     {
-        $this->eventStore       = $eventStore;
+        $this->eventStore = $eventStore;
         $this->conflictResolver = $conflictResolver;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function append($id, DomainEventStream $uncommittedEvents)
+    public function append($id, DomainEventStream $uncommittedEvents): void
     {
         try {
             $this->eventStore->append($id, $uncommittedEvents);
         } catch (DuplicatePlayheadException $e) {
-            $committedEvents   = $this->eventStore->load($id);
+            $committedEvents = $this->eventStore->load($id);
             $conflictingEvents = $this->getConflictingEvents($uncommittedEvents, $committedEvents);
 
             $conflictResolvedEvents = [];
-            $playhead               = $this->getCurrentPlayhead($committedEvents);
+            $playhead = $this->getCurrentPlayhead($committedEvents);
 
             /** @var DomainMessage $uncommittedEvent */
             foreach ($uncommittedEvents as $uncommittedEvent) {
@@ -48,7 +54,7 @@ class ConcurrencyConflictResolvingEventStore implements EventStore
                     }
                 }
 
-                $playhead++;
+                ++$playhead;
 
                 $conflictResolvedEvents[] = new DomainMessage(
                     $id,
@@ -63,30 +69,27 @@ class ConcurrencyConflictResolvingEventStore implements EventStore
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function load($id)
+    public function load($id): DomainEventStream
     {
         return $this->eventStore->load($id);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function loadFromPlayhead($id, $playhead)
+    public function loadFromPlayhead($id, int $playhead): DomainEventStream
     {
         return $this->eventStore->loadFromPlayhead($id, $playhead);
     }
 
-    /**
-     * @return int
-     */
-    private function getCurrentPlayhead(DomainEventStream $committedEvents)
+    private function getCurrentPlayhead(DomainEventStream $committedEvents): int
     {
         $events = iterator_to_array($committedEvents);
         /** @var DomainMessage $lastEvent */
         $lastEvent = end($events);
-        $playhead  = $lastEvent->getPlayhead();
+        $playhead = $lastEvent->getPlayhead();
 
         return $playhead;
     }
@@ -97,7 +100,7 @@ class ConcurrencyConflictResolvingEventStore implements EventStore
     private function getConflictingEvents(
         DomainEventStream $uncommittedEvents,
         DomainEventStream $committedEvents
-    ) {
+    ): array {
         $conflictingEvents = [];
 
         /** @var DomainMessage $committedEvent */

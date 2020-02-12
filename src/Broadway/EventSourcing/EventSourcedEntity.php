@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing;
 
 /**
@@ -17,18 +19,16 @@ namespace Broadway\EventSourcing;
 interface EventSourcedEntity
 {
     /**
-     * Recursively handles $event
+     * Recursively handles $event.
      *
-     * @param $event
+     * @param mixed $event
      */
-    public function handleRecursively($event);
+    public function handleRecursively($event): void;
 
     /**
-     * Registers aggregateRoot as this EventSourcedEntity's aggregate root
-     *
-     * @param EventSourcedAggregateRoot $aggregateRoot
+     * Registers aggregateRoot as this EventSourcedEntity's aggregate root.
      *
      * @throws AggregateRootAlreadyRegisteredException
      */
-    public function registerAggregateRoot(EventSourcedAggregateRoot $aggregateRoot);
+    public function registerAggregateRoot(EventSourcedAggregateRoot $aggregateRoot): void;
 }

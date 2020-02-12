@@ -9,8 +9,11 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing;
 
+use Assert\InvalidArgumentException;
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
@@ -24,7 +27,8 @@ use Broadway\EventStore\EventStore;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
 use Broadway\ReadModel\Projector;
-use Broadway\TestCase;
+use Broadway\Repository\AggregateNotFoundException;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 abstract class AbstractEventSourcingRepositoryTest extends TestCase
@@ -41,7 +45,7 @@ abstract class AbstractEventSourcingRepositoryTest extends TestCase
     /** @var EventSourcingRepository */
     protected $repository;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->eventStore = new TraceableEventStore(new InMemoryEventStore());
         $this->eventStore->trace();
@@ -57,11 +61,12 @@ abstract class AbstractEventSourcingRepositoryTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Assert\InvalidArgumentException
      * @dataProvider objectsNotOfConfiguredClass
      */
     public function it_throws_an_exception_when_adding_an_aggregate_that_is_not_of_the_configured_class($aggregate)
     {
+        $this->expectException(InvalidArgumentException::class);
+
         $this->repository->save($aggregate);
     }
 
@@ -95,7 +100,7 @@ abstract class AbstractEventSourcingRepositoryTest extends TestCase
     public function it_loads_an_aggregate()
     {
         $this->eventStore->append(42, new DomainEventStream([
-            DomainMessage::recordNow(42, 0, new Metadata([]), new DidNumberEvent(1337))
+            DomainMessage::recordNow(42, 0, new Metadata([]), new DidNumberEvent(1337)),
         ]));
 
         $aggregate = $this->repository->load(42);
@@ -109,10 +114,11 @@ abstract class AbstractEventSourcingRepositoryTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Broadway\Repository\AggregateNotFoundException
      */
     public function it_throws_an_exception_if_aggregate_was_not_found()
     {
+        $this->expectException(AggregateNotFoundException::class);
+
         $this->repository->load('does-not-exist');
     }
 
@@ -144,7 +150,7 @@ abstract class AbstractEventSourcingRepositoryTest extends TestCase
         $lastCall = $this->eventStreamDecorator->getLastCall();
 
         $this->assertEquals($aggregate->getAggregateRootId(), $lastCall['aggregateIdentifier']);
-        $this->assertEquals('\\' . get_class($aggregate), $lastCall['aggregateType']);
+        $this->assertEquals(get_class($aggregate), $lastCall['aggregateType']);
 
         $events = iterator_to_array($lastCall['eventStream']);
         $this->assertCount(1, $events);
@@ -173,7 +179,7 @@ abstract class AbstractEventSourcingRepositoryTest extends TestCase
         $repository->save($aggregate);
 
         $metadata = $projector->getMetadata();
-        $data     = $metadata->serialize();
+        $data = $metadata->serialize();
 
         $this->assertArrayHasKey('decoration_test', $data);
         $this->assertEquals('I am a decorated test', $data['decoration_test']);
@@ -202,21 +208,22 @@ class DidNumberEvent
 
 class AnotherTestEventSourcedAggregate extends EventSourcedAggregateRoot
 {
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
-        return 1337;
+        return '1337';
     }
 }
 
 class TestAggregate implements AggregateRoot
 {
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
-        return 42;
+        return '42';
     }
 
-    public function getUncommittedEvents()
+    public function getUncommittedEvents(): DomainEventStream
     {
+        return new DomainEventStream([]);
     }
 }
 
@@ -225,7 +232,7 @@ class TraceableEventstoreDecorator implements EventStreamDecorator
     private $tracing = false;
     private $calls;
 
-    public function decorateForWrite($aggregateType, $aggregateIdentifier, DomainEventStream $eventStream)
+    public function decorateForWrite(string $aggregateType, string $aggregateIdentifier, DomainEventStream $eventStream): DomainEventStream
     {
         if ($this->tracing) {
             $this->calls[] = ['aggregateType' => $aggregateType, 'aggregateIdentifier' => $aggregateIdentifier, 'eventStream' => $eventStream];
@@ -246,7 +253,7 @@ class TraceableEventstoreDecorator implements EventStreamDecorator
 
     public function getLastCall()
     {
-        if (! $this->isCalled()) {
+        if (!$this->isCalled()) {
             throw new RuntimeException('was never called');
         }
 
@@ -256,7 +263,7 @@ class TraceableEventstoreDecorator implements EventStreamDecorator
 
 class TestDecorationMetadataEnricher implements MetadataEnricher
 {
-    public function enrich(Metadata $metadata)
+    public function enrich(Metadata $metadata): Metadata
     {
         return new Metadata(['decoration_test' => 'I am a decorated test']);
     }

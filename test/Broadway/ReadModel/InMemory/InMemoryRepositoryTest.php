@@ -9,14 +9,17 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel\InMemory;
 
-use Broadway\ReadModel\RepositoryTestCase;
-use Broadway\ReadModel\RepositoryTestReadModel;
+use Broadway\ReadModel\Repository;
+use Broadway\ReadModel\Testing\RepositoryTestCase;
+use Broadway\ReadModel\Testing\RepositoryTestReadModel;
 
 class InMemoryRepositoryTest extends RepositoryTestCase
 {
-    protected function createRepository()
+    protected function createRepository(): Repository
     {
         return new InMemoryRepository();
     }
@@ -41,7 +44,7 @@ class InMemoryRepositoryTest extends RepositoryTestCase
         $this->assertEquals($targetRepository->findAll(), $repository->findAll());
     }
 
-    private function createReadModel($id, $name, $foo, array $array = [])
+    private function createReadModel($id, $name, $foo, array $array = []): RepositoryTestReadModel
     {
         return new RepositoryTestReadModel($id, $name, $foo, $array);
     }

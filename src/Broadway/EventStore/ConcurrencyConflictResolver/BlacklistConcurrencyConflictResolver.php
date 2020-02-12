@@ -1,18 +1,26 @@
 <?php
+
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Broadway\EventStore\ConcurrencyConflictResolver;
 
 use Broadway\Domain\DomainMessage;
 use Webmozart\Assert\Assert;
 
-class BlacklistConcurrencyConflictResolver implements ConcurrencyConflictResolver
+final class BlacklistConcurrencyConflictResolver implements ConcurrencyConflictResolver
 {
     private $conflictingEvents = [];
 
-    /**
-     * @param string $eventClass1
-     * @param string $eventClass2
-     */
-    public function registerConflictingEvents($eventClass1, $eventClass2)
+    public function registerConflictingEvents(string $eventClass1, string $eventClass2): void
     {
         Assert::classExists($eventClass1, $eventClass1.' is not a class');
         Assert::classExists($eventClass2, $eventClass2.' is not a class');
@@ -22,7 +30,10 @@ class BlacklistConcurrencyConflictResolver implements ConcurrencyConflictResolve
         $this->conflictingEvents[$eventClass2][$eventClass1] = true;
     }
 
-    public function conflictsWith(DomainMessage $event1, DomainMessage $event2)
+    /**
+     * {@inheritdoc}
+     */
+    public function conflictsWith(DomainMessage $event1, DomainMessage $event2): bool
     {
         return isset($this->conflictingEvents[get_class($event1->getPayload())][get_class($event2->getPayload())]);
     }

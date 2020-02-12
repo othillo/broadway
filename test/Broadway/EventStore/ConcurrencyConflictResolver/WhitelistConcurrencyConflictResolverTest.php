@@ -1,4 +1,16 @@
 <?php
+
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Broadway\EventStore\ConcurrencyConflictResolver;
 
 class WhitelistConcurrencyConflictResolverTest extends ConcurrencyConflictResolverTest
@@ -6,7 +18,7 @@ class WhitelistConcurrencyConflictResolverTest extends ConcurrencyConflictResolv
     /** @var WhitelistConcurrencyConflictResolver */
     private $conflictResolver;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->conflictResolver = new WhitelistConcurrencyConflictResolver();
     }
@@ -21,7 +33,7 @@ class WhitelistConcurrencyConflictResolverTest extends ConcurrencyConflictResolv
     /** @test */
     public function independent_events_do_not_conflict()
     {
-        $event      = $this->createDomainMessage(1, 0, new Event());
+        $event = $this->createDomainMessage(1, 0, new Event());
         $otherEvent = $this->createDomainMessage(1, 0, new OtherEvent());
         $this->conflictResolver->registerIndependentEvents(Event::class, Event::class);
         $this->assertFalse($this->conflictResolver->conflictsWith($event, $event));

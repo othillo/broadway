@@ -9,25 +9,30 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventDispatcher\Testing;
 
 use Broadway\EventDispatcher\EventDispatcher;
 
-class TraceableEventDispatcher implements EventDispatcher
+final class TraceableEventDispatcher implements EventDispatcher
 {
     private $dispatchedEvents = [];
 
-    public function dispatch($eventName, array $arguments)
+    public function dispatch(string $eventName, array $arguments): void
     {
         $this->dispatchedEvents[] = ['event' => $eventName, 'arguments' => $arguments];
     }
 
-    public function addListener($eventName, /* callable */ $callable)
+    public function addListener(string $eventName, callable $callable): void
     {
         return;
     }
 
-    public function getDispatchedEvents()
+    /**
+     * @return mixed[]
+     */
+    public function getDispatchedEvents(): array
     {
         return $this->dispatchedEvents;
     }

@@ -1,6 +1,17 @@
 <?php
 
-require_once __DIR__ . '/../bootstrap.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+require_once __DIR__.'/../bootstrap.php';
 
 class SerializeMe implements Broadway\Serializer\Serializable
 {
@@ -13,13 +24,13 @@ class SerializeMe implements Broadway\Serializer\Serializable
 
     public static function deserialize(array $data)
     {
-        return new SerializeMe($data['message']);
+        return new self($data['message']);
     }
 
     public function serialize()
     {
         return [
-            'message' => $this->message
+            'message' => $this->message,
         ];
     }
 }

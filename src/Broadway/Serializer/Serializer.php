@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Serializer;
 
 /**
@@ -18,18 +20,20 @@ namespace Broadway\Serializer;
 interface Serializer
 {
     /**
-     * @return array
-     *
      * @throws SerializationException
+     *
+     * @param mixed $object
+     *
+     * @return array
      */
-    public function serialize($object);
+    public function serialize($object): array;
 
     /**
      * @param array $serializedObject
      *
-     * @return mixed
-     *
      * @throws SerializationException
+     *
+     * @return mixed
      */
     public function deserialize(array $serializedObject);
 }

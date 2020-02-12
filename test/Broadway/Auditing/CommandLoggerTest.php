@@ -9,29 +9,44 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Auditing;
 
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class CommandLoggerTest extends TestCase
 {
+    /**
+     * @var TraceableLogger
+     */
     private $logger;
+
+    /**
+     * @var Command
+     */
     private $command;
+
+    /**
+     * @var CommandLogger
+     */
     private $commandAuditLogger;
+
+    /**
+     * @var CommandSerializer
+     */
     private $commandSerializer;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->logger = new TraceableLogger();
 
-        $this->commandSerializer = $this->getMockBuilder('Broadway\Auditing\CommandSerializer')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->commandSerializer = $this->prophesize(CommandSerializer::class);
 
-        $this->command   = new Command();
+        $this->command = new Command();
         $this->exception = new MyException('Yolo', 5);
 
-        $this->commandAuditLogger = new CommandLogger($this->logger, $this->commandSerializer);
+        $this->commandAuditLogger = new CommandLogger($this->logger, $this->commandSerializer->reveal());
     }
 
     /**
@@ -39,10 +54,9 @@ class CommandLoggerTest extends TestCase
      */
     public function it_logs_the_command_on_success()
     {
-        $this->commandSerializer->expects($this->once())
-            ->method('serialize')
-            ->with($this->command)
-            ->will($this->returnValue(['all' => 'the data']));
+        $this->commandSerializer
+            ->serialize($this->command)
+            ->willReturn(['all' => 'the data']);
 
         $this->commandAuditLogger->onCommandHandlingSuccess($this->command);
 
@@ -55,10 +69,9 @@ class CommandLoggerTest extends TestCase
      */
     public function it_logs_the_command_on_failure()
     {
-        $this->commandSerializer->expects($this->once())
-            ->method('serialize')
-            ->with($this->command)
-            ->will($this->returnValue(['all' => 'the data']));
+        $this->commandSerializer
+            ->serialize($this->command)
+            ->willReturn(['all' => 'the data']);
 
         $this->commandAuditLogger->onCommandHandlingFailure($this->command, $this->exception);
 

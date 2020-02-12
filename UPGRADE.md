@@ -1,3 +1,23 @@
+# Upgrade to 2.0
+
+## Concrete classes are made final
+
+As it is no longer possible to extend these classes it is necessary to use composition for code reuse.
+
+## PHP 7
+
+Many interfaces have updated method signatures because of added (return) type hints. When implementing
+these interfaces the method signatures must adhere to the parent's signatures.
+
+## PHPUnit 6
+PHPUnit is required when you use Broadway's test helpers like Scenarios and base test cases in
+the `src/*/Testing/*` directories. In this case you will need to update your projects to PHPUnit 6.
+
+## Test helpers
+The RepositoryTestCase, EventStoreTest, EventStoreManagementTest are moved from `test` to `src` and into
+the `Testing` namespace. It's now easier to use them without autoloading magic but you need to reimport
+the classes with the updated namespace in your project.
+
 # Upgrade to 1.0
 
 ## Symfony bundle, DBAL event store, Elasticsearch read models and saga are moved to separate repositories.

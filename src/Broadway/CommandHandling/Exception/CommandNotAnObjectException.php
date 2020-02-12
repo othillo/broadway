@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling\Exception;
 
 use InvalidArgumentException;
@@ -16,6 +18,6 @@ use InvalidArgumentException;
 /**
  * Commands should be objects.
  */
-class CommandNotAnObjectException extends InvalidArgumentException
+final class CommandNotAnObjectException extends InvalidArgumentException
 {
 }

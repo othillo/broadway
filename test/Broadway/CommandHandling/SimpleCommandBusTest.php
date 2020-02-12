@@ -9,15 +9,20 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling;
 
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class SimpleCommandBusTest extends TestCase
 {
+    /**
+     * @var SimpleCommandBus
+     */
     private $commandBus;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->commandBus = new SimpleCommandBus();
     }
@@ -42,7 +47,7 @@ class SimpleCommandBusTest extends TestCase
         $command1 = ['foo' => 'bar'];
         $command2 = ['foo' => 'bas'];
 
-        $commandHandler = $this->getMockBuilder('Broadway\CommandHandling\SimpleCommandHandler')->getMock();
+        $commandHandler = $this->createMock(CommandHandler::class);
 
         $commandHandler
             ->expects($this->at(0))
@@ -67,8 +72,8 @@ class SimpleCommandBusTest extends TestCase
         $command1 = ['foo' => 'bar'];
         $command2 = ['foo' => 'bas'];
 
-        $commandHandler = $this->getMockBuilder('Broadway\CommandHandling\SimpleCommandHandler')->getMock();
-        $simpleHandler  = $this->getMockBuilder('Broadway\CommandHandling\SimpleCommandHandler')->getMock();
+        $commandHandler = $this->createMock(CommandHandler::class);
+        $simpleHandler = $this->createMock(CommandHandler::class);
 
         $commandHandler
             ->expects($this->at(0))
@@ -98,9 +103,9 @@ class SimpleCommandBusTest extends TestCase
         $this->commandBus->dispatch($command2);
     }
 
-    private function createCommandHandlerMock($expectedCommand)
+    private function createCommandHandlerMock(array $expectedCommand): \PHPUnit_Framework_MockObject_MockObject
     {
-        $mock = $this->getMockBuilder('Broadway\CommandHandling\SimpleCommandHandler')->getMock();
+        $mock = $this->createMock(CommandHandler::class);
 
         $mock
             ->expects($this->once())
@@ -119,13 +124,13 @@ class SimpleCommandBusTestHandler implements CommandHandler
 
     public function __construct($commandBus, $dispatchableCommand)
     {
-        $this->commandBus          = $commandBus;
+        $this->commandBus = $commandBus;
         $this->dispatchableCommand = $dispatchableCommand;
     }
 
-    public function handle($command)
+    public function handle($command): void
     {
-        if (! $this->handled) {
+        if (!$this->handled) {
             $this->commandBus->dispatch($this->dispatchableCommand);
             $this->handled = true;
         }

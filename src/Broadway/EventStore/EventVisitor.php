@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore;
 
 use Broadway\Domain\DomainMessage;
 
 interface EventVisitor
 {
-    public function doWithEvent(DomainMessage $domainMessage);
+    public function doWithEvent(DomainMessage $domainMessage): void;
 }

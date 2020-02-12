@@ -9,105 +9,103 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore\Management;
 
 use Broadway\Domain\DomainMessage;
 
-class Criteria
+final class Criteria
 {
     private $aggregateRootTypes = [];
-    private $aggregateRootIds   = [];
-    private $eventTypes         = [];
+    private $aggregateRootIds = [];
+    private $eventTypes = [];
 
     /**
-     * Create a new criteria with the specified aggregate root types
+     * Create a new criteria with the specified aggregate root types.
      *
-     * @param  array  $aggregateRootTypes
-     * @return static
+     * @param string[] $aggregateRootTypes
      */
-    public function withAggregateRootTypes(array $aggregateRootTypes)
+    public function withAggregateRootTypes(array $aggregateRootTypes): self
     {
-        $instance                     = clone($this);
+        $instance = clone $this;
         $instance->aggregateRootTypes = $aggregateRootTypes;
 
         return $instance;
     }
 
     /**
-     * Create a new criteria with the specified aggregate root IDs
+     * Create a new criteria with the specified aggregate root IDs.
      *
-     * @param  array    $aggregateRootIds
-     * @return Criteria
+     * @param mixed[] $aggregateRootIds
      */
-    public function withAggregateRootIds(array $aggregateRootIds)
+    public function withAggregateRootIds(array $aggregateRootIds): self
     {
-        $instance                   = clone($this);
+        $instance = clone $this;
         $instance->aggregateRootIds = $aggregateRootIds;
 
         return $instance;
     }
 
     /**
-     * Create a new criteria with the specified event types
+     * Create a new criteria with the specified event types.
      *
-     * @param  array    $eventTypes
-     * @return Criteria
+     * @param mixed[] $eventTypes
      */
-    public function withEventTypes(array $eventTypes)
+    public function withEventTypes(array $eventTypes): self
     {
-        $instance             = clone($this);
+        $instance = clone $this;
         $instance->eventTypes = $eventTypes;
 
         return $instance;
     }
 
     /**
-     * Get the aggregate root types for the criteria
+     * Get the aggregate root types for the criteria.
      *
      * @return string[]
      */
-    public function getAggregateRootTypes()
+    public function getAggregateRootTypes(): array
     {
         return $this->aggregateRootTypes;
     }
 
     /**
-     * Get the aggregate root IDs for the criteria
+     * Get the aggregate root IDs for the criteria.
      *
-     * @return array
+     * @return mixed[]
      */
-    public function getAggregateRootIds()
+    public function getAggregateRootIds(): array
     {
         return $this->aggregateRootIds;
     }
 
     /**
-     * Get the event types for the criteria
+     * Get the event types for the criteria.
      *
-     * @return array
+     * @return mixed[]
      */
-    public function getEventTypes()
+    public function getEventTypes(): array
     {
         return $this->eventTypes;
     }
 
     /**
-     * Create a new criteria
-     *
-     * @return static
+     * Create a new criteria.
      */
-    public static function create()
+    public static function create(): self
     {
         return new static();
     }
 
     /**
-     * Determine if a domain message is matched by this criteria
+     * Determine if a domain message is matched by this criteria.
      *
-     * @param  DomainMessage $domainMessage
+     * @param DomainMessage $domainMessage
+     *
      * @return bool
      */
-    public function isMatchedBy(DomainMessage $domainMessage)
+    public function isMatchedBy(DomainMessage $domainMessage): bool
     {
         if ($this->aggregateRootTypes) {
             throw new CriteriaNotSupportedException(
@@ -115,11 +113,11 @@ class Criteria
             );
         }
 
-        if ($this->aggregateRootIds && ! in_array($domainMessage->getId(), $this->aggregateRootIds)) {
+        if ($this->aggregateRootIds && !in_array($domainMessage->getId(), $this->aggregateRootIds)) {
             return false;
         }
 
-        if ($this->eventTypes && ! in_array($domainMessage->getType(), $this->eventTypes)) {
+        if ($this->eventTypes && !in_array($domainMessage->getType(), $this->eventTypes)) {
             return false;
         }
 

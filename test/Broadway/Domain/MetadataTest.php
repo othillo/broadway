@@ -9,9 +9,11 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Domain;
 
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class MetadataTest extends TestCase
 {
@@ -48,5 +50,37 @@ class MetadataTest extends TestCase
 
         $expected = new Metadata(['foo' => 42]);
         $this->assertEquals($expected, $m1);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_all_values()
+    {
+        $m1 = new Metadata(['foo' => 42, 'bar' => 1337]);
+
+        $expected = ['foo' => 42, 'bar' => 1337];
+        $this->assertEquals($expected, $m1->all());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_get_contains_unset_key()
+    {
+        $m1 = new Metadata(['foo' => 42]);
+
+        $this->assertNull($m1->get('bar'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_value_of_a_key_with_get()
+    {
+        $m1 = new Metadata(['foo' => 42]);
+
+        $expected = 42;
+        $this->assertEquals($expected, $m1->get('foo'));
     }
 }

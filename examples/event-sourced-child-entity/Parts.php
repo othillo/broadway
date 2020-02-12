@@ -1,9 +1,20 @@
 <?php
 
-require_once __DIR__ . '/../bootstrap.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Part aggregate root
+ * Part aggregate root.
  */
 class Part extends Broadway\EventSourcing\EventSourcedAggregateRoot
 {
@@ -15,7 +26,7 @@ class Part extends Broadway\EventSourcing\EventSourcedAggregateRoot
      */
     public static function manufacture($partId, $manufacturerId, $manufacturerName)
     {
-        $part = new Part();
+        $part = new self();
 
         // After instantiation of the object we apply the "PartWasManufacturedEvent".
         $part->apply(new PartWasManufacturedEvent($partId, $manufacturerId, $manufacturerName));
@@ -28,7 +39,7 @@ class Part extends Broadway\EventSourcing\EventSourcedAggregateRoot
      *
      * @return string
      */
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
         return $this->partId;
     }
@@ -53,7 +64,7 @@ class Part extends Broadway\EventSourcing\EventSourcedAggregateRoot
         );
     }
 
-    protected function getChildEntities()
+    protected function getChildEntities(): array
     {
         // Since the aggregate root always handles the events first we can rely
         // on $this->manufacturer being set by the time the child entities are
@@ -71,8 +82,8 @@ class Manufacturer extends Broadway\EventSourcing\SimpleEventSourcedEntity
 
     public function __construct($partId, $manufacturerId, $manufacturerName)
     {
-        $this->partId           = $partId;
-        $this->manufacturerId   = $manufacturerId;
+        $this->partId = $partId;
+        $this->manufacturerId = $manufacturerId;
         $this->manufacturerName = $manufacturerName;
     }
 
@@ -102,8 +113,8 @@ class ManufacturePartCommand
 
     public function __construct($partId, $manufacturerId, $manufacturerName)
     {
-        $this->partId           = $partId;
-        $this->manufacturerId   = $manufacturerId;
+        $this->partId = $partId;
+        $this->manufacturerId = $manufacturerId;
         $this->manufacturerName = $manufacturerName;
     }
 }
@@ -116,8 +127,8 @@ class PartWasManufacturedEvent
 
     public function __construct($partId, $manufacturerId, $manufacturerName)
     {
-        $this->partId           = $partId;
-        $this->manufacturerId   = $manufacturerId;
+        $this->partId = $partId;
+        $this->manufacturerId = $manufacturerId;
         $this->manufacturerName = $manufacturerName;
     }
 }
@@ -129,7 +140,7 @@ class RenameManufacturerForPartCommand
 
     public function __construct($partId, $manufacturerName)
     {
-        $this->partId           = $partId;
+        $this->partId = $partId;
         $this->manufacturerName = $manufacturerName;
     }
 }
@@ -141,7 +152,7 @@ class PartManufacturerWasRenamedEvent
 
     public function __construct($partId, $manufacturerName)
     {
-        $this->partId           = $partId;
+        $this->partId = $partId;
         $this->manufacturerName = $manufacturerName;
     }
 }

@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling\Testing;
 
 use Broadway\CommandHandling\CommandHandler;
@@ -16,7 +18,7 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventStore\TraceableEventStore;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Helper testing scenario to test command handlers.
@@ -36,21 +38,17 @@ class Scenario
     private $aggregateId;
 
     public function __construct(
-        PHPUnit_Framework_TestCase $testCase,
+        TestCase $testCase,
         TraceableEventStore $eventStore,
         CommandHandler $commandHandler
     ) {
-        $this->testCase       = $testCase;
-        $this->eventStore     = $eventStore;
+        $this->testCase = $testCase;
+        $this->eventStore = $eventStore;
         $this->commandHandler = $commandHandler;
-        $this->aggregateId    = 1;
+        $this->aggregateId = '1';
     }
 
-    /**
-     * @param  string $aggregateId
-     * @return Scenario
-     */
-    public function withAggregateId($aggregateId)
+    public function withAggregateId(string $aggregateId): self
     {
         $this->aggregateId = $aggregateId;
 
@@ -58,20 +56,18 @@ class Scenario
     }
 
     /**
-     * @param array $events
-     *
-     * @return Scenario
+     * @param mixed[] $events
      */
-    public function given(array $events = null)
+    public function given(?array $events): self
     {
-        if ($events === null) {
+        if (null === $events) {
             return $this;
         }
 
         $messages = [];
         $playhead = -1;
         foreach ($events as $event) {
-            $playhead++;
+            ++$playhead;
             $messages[] = DomainMessage::recordNow($this->aggregateId, $playhead, new Metadata([]), $event);
         }
 
@@ -82,10 +78,8 @@ class Scenario
 
     /**
      * @param mixed $command
-     *
-     * @return Scenario
      */
-    public function when($command)
+    public function when($command): self
     {
         $this->eventStore->trace();
 
@@ -95,11 +89,9 @@ class Scenario
     }
 
     /**
-     * @param array $events
-     *
-     * @return Scenario
+     * @param mixed[] $events
      */
-    public function then(array $events)
+    public function then(array $events): self
     {
         $this->testCase->assertEquals($events, $this->eventStore->getEvents());
 

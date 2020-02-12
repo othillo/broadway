@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling;
 
 use Broadway\CommandHandling\Exception\CommandNotAnObjectException;
@@ -24,27 +26,30 @@ use Broadway\CommandHandling\Exception\CommandNotAnObjectException;
 abstract class SimpleCommandHandler implements CommandHandler
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function handle($command)
+    public function handle($command): void
     {
         $method = $this->getHandleMethod($command);
 
-        if (! method_exists($this, $method)) {
+        if (!method_exists($this, $method)) {
             return;
         }
 
         $this->$method($command);
     }
 
-    private function getHandleMethod($command)
+    /**
+     * @param mixed $command
+     */
+    private function getHandleMethod($command): string
     {
-        if (! is_object($command)) {
+        if (!is_object($command)) {
             throw new CommandNotAnObjectException();
         }
 
         $classParts = explode('\\', get_class($command));
 
-        return 'handle' . end($classParts);
+        return 'handle'.end($classParts);
     }
 }

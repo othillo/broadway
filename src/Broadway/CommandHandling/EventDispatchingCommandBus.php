@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling;
 
 use Broadway\EventDispatcher\EventDispatcher;
@@ -20,7 +22,7 @@ use Exception;
  * Dispatches events signalling whether a command was executed successfully or
  * if it failed.
  */
-class EventDispatchingCommandBus implements CommandBus
+final class EventDispatchingCommandBus implements CommandBus
 {
     const EVENT_COMMAND_SUCCESS = 'broadway.command_handling.command_success';
     const EVENT_COMMAND_FAILURE = 'broadway.command_handling.command_failure';
@@ -35,9 +37,9 @@ class EventDispatchingCommandBus implements CommandBus
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function dispatch($command)
+    public function dispatch($command): void
     {
         try {
             $this->commandBus->dispatch($command);
@@ -53,9 +55,9 @@ class EventDispatchingCommandBus implements CommandBus
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function subscribe(CommandHandler $handler)
+    public function subscribe(CommandHandler $handler): void
     {
         $this->commandBus->subscribe($handler);
     }

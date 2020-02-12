@@ -9,9 +9,11 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Domain;
 
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class DateTimeTest extends TestCase
 {
@@ -20,7 +22,7 @@ class DateTimeTest extends TestCase
      */
     public function it_converts_back_and_forth()
     {
-        $string   = '2014-03-12T14:17:19.176169+00:00';
+        $string = '2014-03-12T14:17:19.176169+00:00';
         $dateTime = DateTime::fromString($string);
 
         $this->assertEquals($string, $dateTime->toString());
@@ -28,21 +30,10 @@ class DateTimeTest extends TestCase
 
     /**
      * @test
-     * @dataProvider providesLocales
      */
-    public function it_creates_now($locale)
+    public function it_creates_now()
     {
-        $this->setLocale(LC_ALL, $locale);
-
         $this->assertInstanceOf('Broadway\Domain\DateTime', DateTime::now());
-    }
-
-    public function providesLocales()
-    {
-        return array(
-            array('en_GB.UTF-8'),
-            array('fr_FR.UTF-8'),
-        );
     }
 
     /**
@@ -72,7 +63,7 @@ class DateTimeTest extends TestCase
      */
     public function it_returns_a_new_instance_when_adding_interval()
     {
-        $dateTime    = DateTime::fromString('2015-03-14T00:00:00.000000+00:00');
+        $dateTime = DateTime::fromString('2015-03-14T00:00:00.000000+00:00');
         $newDateTime = $dateTime->add('PT0S');
 
         $this->assertNotSame($newDateTime, $dateTime);
@@ -122,7 +113,7 @@ class DateTimeTest extends TestCase
     {
         return [
             ['2015-03-14T00:00:00.000000+00:00', 'P6W',            '2015-04-25T00:00:00.000000+00:00'],
-            ['2000-01-01T00:00:00.000000+00:00', 'P7Y5M4DT4H3M2S', '2007-06-05T04:03:02.000000+00:00']
+            ['2000-01-01T00:00:00.000000+00:00', 'P7Y5M4DT4H3M2S', '2007-06-05T04:03:02.000000+00:00'],
         ];
     }
 
@@ -161,7 +152,7 @@ class DateTimeTest extends TestCase
             ['2014-05-01T12:00:00.000000+00:00', '2014-05-01T12:00:00.000000+00:00', false], // equal
             ['2014-04-22T13:37:42.123456+02:00', '2014-04-22T13:37:42.123456+00:00', false], // timezone
             ['2014-04-22T13:37:42.123456+00:00', '2014-04-22T12:37:42.123456+00:00', true],  // time
-            ['2014-04-21T13:37:42.123456+00:00', '2014-04-22T13:37:42.123456+00:00', false]  // date
+            ['2014-04-21T13:37:42.123456+00:00', '2014-04-22T13:37:42.123456+00:00', false],  // date
         ];
     }
 }

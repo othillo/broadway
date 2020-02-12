@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling\Testing;
 
 use Broadway\CommandHandling\CommandBus;
@@ -17,26 +19,26 @@ use Broadway\CommandHandling\CommandHandler;
 /**
  * Command bus that is able to record all dispatched commands.
  */
-class TraceableCommandBus implements CommandBus
+final class TraceableCommandBus implements CommandBus
 {
     private $commandHandlers = [];
-    private $commands        = [];
-    private $record          = false;
+    private $commands = [];
+    private $record = false;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function subscribe(CommandHandler $handler)
+    public function subscribe(CommandHandler $handler): void
     {
         $this->commandHandlers[] = $handler;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function dispatch($command)
+    public function dispatch($command): void
     {
-        if (! $this->record) {
+        if (!$this->record) {
             return;
         }
 
@@ -44,14 +46,14 @@ class TraceableCommandBus implements CommandBus
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
-    public function getRecordedCommands()
+    public function getRecordedCommands(): array
     {
         return $this->commands;
     }
 
-    public function record()
+    public function record(): bool
     {
         return $this->record = true;
     }

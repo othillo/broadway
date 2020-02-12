@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Processor;
 
 use Broadway\Domain\DomainMessage;
@@ -20,24 +22,27 @@ use Broadway\EventHandling\EventListener;
 abstract class Processor implements EventListener
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function handle(DomainMessage $domainMessage)
+    public function handle(DomainMessage $domainMessage): void
     {
-        $event  = $domainMessage->getPayload();
+        $event = $domainMessage->getPayload();
         $method = $this->getHandleMethod($event);
 
-        if (! method_exists($this, $method)) {
+        if (!method_exists($this, $method)) {
             return;
         }
 
         $this->$method($event, $domainMessage);
     }
 
-    private function getHandleMethod($event)
+    /**
+     * @param mixed $event
+     */
+    private function getHandleMethod($event): string
     {
         $classParts = explode('\\', get_class($event));
 
-        return 'handle' . end($classParts);
+        return 'handle'.end($classParts);
     }
 }

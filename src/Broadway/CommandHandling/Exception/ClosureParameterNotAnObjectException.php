@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the broadway/broadway package.
  *
@@ -9,9 +11,13 @@
  * file that was distributed with this source code.
  */
 
-if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
-    $loader = require $file;
-    $loader->add('Broadway', __DIR__);
-} else {
-    throw new RuntimeException('Install dependencies to run test suite.');
+namespace Broadway\CommandHandling\Exception;
+
+use InvalidArgumentException;
+
+/**
+ * Closure parameter should be object.
+ */
+class ClosureParameterNotAnObjectException extends InvalidArgumentException
+{
 }

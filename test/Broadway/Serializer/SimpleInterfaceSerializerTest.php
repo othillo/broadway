@@ -9,48 +9,63 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Serializer;
 
-use Broadway\TestCase;
+use Assert\InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
 class SimpleInterfaceSerializerTest extends TestCase
 {
+    /**
+     * @var SimpleInterfaceSerializer
+     */
     private $serializer;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->serializer = new SimpleInterfaceSerializer();
     }
 
     /**
      * @test
-     * @expectedException Broadway\Serializer\SerializationException
-     * @expectedExceptionMessage Object 'stdClass' does not implement Broadway\Serializer\Serializable
      */
     public function it_throws_an_exception_if_an_object_does_not_implement_Serializable()
     {
+        $this->expectException(SerializationException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Object \'%s\' does not implement %s',
+            \stdClass::class,
+            Serializable::class
+        ));
+
         $this->serializer->serialize(new \stdClass());
     }
 
     /**
      * @test
-     * @expectedException Assert\InvalidArgumentException
-     * @expectedExceptionMessage Key 'class' should be set
+     *
      * @todo custom exception
      */
     public function it_throws_an_exception_if_class_not_set_in_data()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Key \'class\' should be set');
+
         $this->serializer->deserialize([]);
     }
 
     /**
      * @test
-     * @expectedException Assert\InvalidArgumentException
-     * @expectedExceptionMessage Key 'payload' should be set
+     *
      * @todo custom exception
      */
     public function it_throws_an_exception_if_payload_not_set_in_data()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Key \'payload\' should be set');
+
         $this->serializer->deserialize(['class' => 'SomeClass']);
     }
 
@@ -62,8 +77,8 @@ class SimpleInterfaceSerializerTest extends TestCase
         $object = new TestSerializable('bar');
 
         $this->assertEquals([
-            'class'   => 'Broadway\Serializer\TestSerializable',
-            'payload' => ['foo' => 'bar']
+            'class' => 'Broadway\Serializer\TestSerializable',
+            'payload' => ['foo' => 'bar'],
         ], $this->serializer->serialize($object));
     }
 
@@ -84,7 +99,7 @@ class SimpleInterfaceSerializerTest extends TestCase
     {
         $object = new TestSerializable('bar');
 
-        $serialized   = $this->serializer->serialize($object);
+        $serialized = $this->serializer->serialize($object);
         $deserialized = $this->serializer->deserialize($serialized);
 
         $this->assertEquals($object, $deserialized);
@@ -101,7 +116,7 @@ class TestSerializable implements Serializable
     }
 
     /**
-     * @return this
+     * @return $this
      */
     public static function deserialize(array $data)
     {
@@ -109,9 +124,9 @@ class TestSerializable implements Serializable
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return ['foo' => $this->foo];
     }

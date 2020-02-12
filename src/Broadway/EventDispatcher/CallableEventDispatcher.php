@@ -9,21 +9,23 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventDispatcher;
 
 /**
  * Event dispatcher implementation.
  */
-class CallableEventDispatcher implements EventDispatcher
+final class CallableEventDispatcher implements EventDispatcher
 {
     private $listeners = [];
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function dispatch($eventName, array $arguments)
+    public function dispatch(string $eventName, array $arguments): void
     {
-        if (! isset($this->listeners[$eventName])) {
+        if (!isset($this->listeners[$eventName])) {
             return;
         }
 
@@ -33,11 +35,11 @@ class CallableEventDispatcher implements EventDispatcher
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function addListener($eventName, /* callable */ $callable)
+    public function addListener(string $eventName, callable $callable): void
     {
-        if (! isset($this->listeners[$eventName])) {
+        if (!isset($this->listeners[$eventName])) {
             $this->listeners[$eventName] = [];
         }
 

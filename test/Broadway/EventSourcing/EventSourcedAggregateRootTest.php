@@ -9,12 +9,14 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class EventSourcedAggregateRootTest extends TestCase
 {
@@ -31,7 +33,7 @@ class EventSourcedAggregateRootTest extends TestCase
         $i = 0;
         foreach ($eventStream as $domainMessage) {
             $this->assertEquals($i, $domainMessage->getPlayhead());
-            $i++;
+            ++$i;
         }
         $this->assertEquals(2, $i);
     }
@@ -68,7 +70,7 @@ class EventSourcedAggregateRootTest extends TestCase
         $messages = [];
         $playhead = -1;
         foreach ($events as $event) {
-            $playhead++;
+            ++$playhead;
             $messages[] = DomainMessage::recordNow(1, $playhead, new Metadata([]), $event);
         }
 
@@ -80,7 +82,7 @@ class MyTestAggregateRoot extends EventSourcedAggregateRoot
 {
     public $isCalled = false;
 
-    public function getAggregateRootId()
+    public function getAggregateRootId(): string
     {
         return 'y0l0';
     }

@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Domain;
 
 use Broadway\Serializer\Serializable;
@@ -16,7 +18,7 @@ use Broadway\Serializer\Serializable;
 /**
  * Metadata adding extra information to the DomainMessage.
  */
-class Metadata implements Serializable
+final class Metadata implements Serializable
 {
     private $values = [];
 
@@ -29,38 +31,50 @@ class Metadata implements Serializable
     }
 
     /**
-     * Merges the values of this and the other instance.
+     * Helper method to construct an instance containing the key and value.
      *
-     * @param Metadata $otherMetadata
-     *
-     * @return Metadata a new instance
+     * @param mixed $key
+     * @param mixed $value
      */
-    public function merge(Metadata $otherMetadata)
+    public static function kv($key, $value): self
     {
-        $mergedValues = array_merge($this->values, $otherMetadata->values);
-
-        return new Metadata($mergedValues);
+        return new self([$key => $value]);
     }
 
     /**
-     * {@inheritDoc}
+     * Merges the values of this and the other instance.
      */
-    public function serialize()
+    public function merge(self $otherMetadata): self
+    {
+        return new self(array_merge($this->values, $otherMetadata->values));
+    }
+
+    /**
+     * Returns an array with all metadata.
+     *
+     * @return mixed[]
+     */
+    public function all(): array
     {
         return $this->values;
     }
 
     /**
-     * Helper method to construct an instance containing the key and value.
+     * Get a specific metadata value based on key.
      *
-     * @param mixed $key
-     * @param mixed $value
-     *
-     * @return Metadata
+     * @return mixed
      */
-    public static function kv($key, $value)
+    public function get(string $key)
     {
-        return new Metadata([$key => $value]);
+        return $this->values[$key] ?? null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize(): array
+    {
+        return $this->values;
     }
 
     /**
@@ -68,8 +82,8 @@ class Metadata implements Serializable
      *
      * @return Metadata
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): self
     {
-        return new Metadata($data);
+        return new self($data);
     }
 }

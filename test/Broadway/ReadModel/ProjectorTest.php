@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ProjectorTest extends TestCase
 {
@@ -23,7 +25,7 @@ class ProjectorTest extends TestCase
     public function it_passes_the_event_and_domain_message()
     {
         $testProjector = new TestProjector();
-        $testEvent     = new TestEvent();
+        $testEvent = new TestEvent();
 
         $this->assertFalse($testProjector->isCalled());
 

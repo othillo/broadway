@@ -9,11 +9,15 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore;
+
+use Broadway\EventStore\Testing\EventStoreTest;
 
 class InMemoryEventStoreTest extends EventStoreTest
 {
-    public function setUp()
+    protected function setUp()
     {
         $this->eventStore = new InMemoryEventStore();
     }

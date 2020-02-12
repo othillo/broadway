@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel\InMemory;
 
 use Broadway\ReadModel\Identifiable;
@@ -20,22 +22,22 @@ use Broadway\ReadModel\Transferable;
  *
  * The in-memory repository is useful for testing code.
  */
-class InMemoryRepository implements Repository, Transferable
+final class InMemoryRepository implements Repository, Transferable
 {
     private $data = [];
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function save(Identifiable $model)
+    public function save(Identifiable $model): void
     {
-        $this->data[(string) $model->getId()] = $model;
+        $this->data[$model->getId()] = $model;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function find($id)
+    public function find($id): ?Identifiable
     {
         $id = (string) $id;
         if (isset($this->data[$id])) {
@@ -46,23 +48,23 @@ class InMemoryRepository implements Repository, Transferable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function findBy(array $fields)
+    public function findBy(array $fields): array
     {
-        if (! $fields) {
+        if (!$fields) {
             return [];
         }
 
         return array_values(array_filter($this->data, function ($model) use ($fields) {
             foreach ($fields as $field => $value) {
-                $getter = 'get' . ucfirst($field);
+                $getter = 'get'.ucfirst($field);
 
                 $modelValue = $model->$getter();
 
-                if (is_array($modelValue) && ! in_array($value, $modelValue)) {
+                if (is_array($modelValue) && !in_array($value, $modelValue)) {
                     return false;
-                } elseif (! is_array($modelValue) && $modelValue !== $value) {
+                } elseif (!is_array($modelValue) && $modelValue !== $value) {
                     return false;
                 }
             }
@@ -72,17 +74,17 @@ class InMemoryRepository implements Repository, Transferable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function findAll()
+    public function findAll(): array
     {
         return array_values($this->data);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function transferTo(Repository $otherRepository)
+    public function transferTo(Repository $otherRepository): void
     {
         foreach ($this->data as $model) {
             $otherRepository->save($model);
@@ -90,9 +92,9 @@ class InMemoryRepository implements Repository, Transferable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function remove($id)
+    public function remove($id): void
     {
         unset($this->data[(string) $id]);
     }

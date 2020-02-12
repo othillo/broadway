@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\CommandHandling\Testing;
 
 use Broadway\CommandHandling\CommandHandler;
@@ -17,7 +19,7 @@ use Broadway\EventHandling\SimpleEventBus;
 use Broadway\EventStore\EventStore;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case that can be used to set up a command handler scenario.
@@ -37,10 +39,10 @@ abstract class CommandHandlerScenarioTestCase extends TestCase
     /**
      * @return Scenario
      */
-    protected function createScenario()
+    protected function createScenario(): Scenario
     {
-        $eventStore     = new TraceableEventStore(new InMemoryEventStore());
-        $eventBus       = new SimpleEventBus();
+        $eventStore = new TraceableEventStore(new InMemoryEventStore());
+        $eventBus = new SimpleEventBus();
         $commandHandler = $this->createCommandHandler($eventStore, $eventBus);
 
         return new Scenario($this, $eventStore, $commandHandler);
@@ -54,5 +56,5 @@ abstract class CommandHandlerScenarioTestCase extends TestCase
      *
      * @return CommandHandler
      */
-    abstract protected function createCommandHandler(EventStore $eventStore, EventBus $eventBus);
+    abstract protected function createCommandHandler(EventStore $eventStore, EventBus $eventBus): CommandHandler;
 }

@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore\Exception;
 
 /**
- * Class InvalidIdentifierException
+ * Class InvalidIdentifierException.
  */
-class InvalidIdentifierException extends \InvalidArgumentException
+final class InvalidIdentifierException extends \InvalidArgumentException
 {
 }

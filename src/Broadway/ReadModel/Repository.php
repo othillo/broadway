@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\ReadModel;
 
 /**
@@ -16,29 +18,27 @@ namespace Broadway\ReadModel;
  */
 interface Repository
 {
-    public function save(Identifiable $data);
+    public function save(Identifiable $data): void;
 
     /**
-     * @param string $id
-     *
-     * @return Identifiable|null
+     * @param mixed $id
      */
-    public function find($id);
+    public function find($id): ?Identifiable;
 
     /**
      * @param array $fields
      *
      * @return Identifiable[]
      */
-    public function findBy(array $fields);
+    public function findBy(array $fields): array;
 
     /**
      * @return Identifiable[]
      */
-    public function findAll();
+    public function findAll(): array;
 
     /**
-     * @param string $id
+     * @param mixed $id
      */
-    public function remove($id);
+    public function remove($id): void;
 }

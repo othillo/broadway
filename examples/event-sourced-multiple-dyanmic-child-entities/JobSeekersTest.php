@@ -1,6 +1,19 @@
 <?php
 
-require_once __DIR__ . '/JobSeekers.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+use Broadway\CommandHandling\CommandHandler;
+
+require_once __DIR__.'/JobSeekers.php';
 
 /**
  * We drive the tests of our aggregate root through the command handler.
@@ -22,7 +35,7 @@ class JobSeekersCommandHandlerTest extends Broadway\CommandHandling\Testing\Comm
         $this->generator = new Broadway\UuidGenerator\Rfc4122\Version4Generator();
     }
 
-    protected function createCommandHandler(Broadway\EventStore\EventStore $eventStore, Broadway\EventHandling\EventBus $eventBus)
+    protected function createCommandHandler(Broadway\EventStore\EventStore $eventStore, Broadway\EventHandling\EventBus $eventBus): CommandHandler
     {
         $repository = new JobSeekerRepository($eventStore, $eventBus);
 
@@ -164,7 +177,7 @@ class JobSeekersCommandHandlerTest extends Broadway\CommandHandling\Testing\Comm
 
     /**
      * @test
-     * @expectedException        InvalidArgumentException
+     * @expectedException        \InvalidArgumentException
      * @expectedExceptionMessage Job job-000 already assigned to this job seeker.
      */
     public function it_cannot_add_the_same_job_if_job_is_already_assigned()
@@ -183,7 +196,7 @@ class JobSeekersCommandHandlerTest extends Broadway\CommandHandling\Testing\Comm
 
     /**
      * @test
-     * @expectedException        InvalidArgumentException
+     * @expectedException        \InvalidArgumentException
      * @expectedExceptionMessage Job job-000 is not assigned to this job seeker.
      */
     public function it_cannot_describe_a_job_it_knows_nothing_about()

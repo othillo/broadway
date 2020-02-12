@@ -9,12 +9,14 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventSourcing\MetadataEnrichment;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use Broadway\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class MetadataEnrichingEventStreamDecoratorTest extends TestCase
 {
@@ -37,7 +39,7 @@ class MetadataEnrichingEventStreamDecoratorTest extends TestCase
      */
     public function it_calls_the_enricher_for_every_event()
     {
-        $enricher  = new TracableMetadataEnricher();
+        $enricher = new TracableMetadataEnricher();
         $decorator = new MetadataEnrichingEventStreamDecorator([$enricher]);
 
         $eventStream = $this->createDomainEventStream();
@@ -52,7 +54,7 @@ class MetadataEnrichingEventStreamDecoratorTest extends TestCase
      */
     public function it_returns_a_domain_eventstream_with_messages_with_extra_metadata()
     {
-        $enricher  = new TracableMetadataEnricher();
+        $enricher = new TracableMetadataEnricher();
         $decorator = new MetadataEnrichingEventStreamDecorator([$enricher]);
 
         $eventStream = $this->createDomainEventStream();
@@ -75,13 +77,12 @@ class MetadataEnrichingEventStreamDecoratorTest extends TestCase
      */
     public function it_calls_the_enricher_when_registered_later()
     {
-        $constructorEnricher     = new TracableMetadataEnricher();
+        $constructorEnricher = new TracableMetadataEnricher();
         $newlyRegisteredEnricher = new TracableMetadataEnricher();
-        $decorator               = new MetadataEnrichingEventStreamDecorator([$constructorEnricher]);
+        $decorator = new MetadataEnrichingEventStreamDecorator([$constructorEnricher]);
         $decorator->registerEnricher($newlyRegisteredEnricher);
 
-        $eventStream    = $this->createDomainEventStream();
-        $newEventStream = $decorator->decorateForWrite('id', 'type', $eventStream);
+        $decorator->decorateForWrite('id', 'type', $this->createDomainEventStream());
 
         $this->assertEquals(2, $constructorEnricher->callCount());
         $this->assertEquals(2, $newlyRegisteredEnricher->callCount());
@@ -100,14 +101,14 @@ class TracableMetadataEnricher implements MetadataEnricher
 {
     private $calls;
 
-    public function enrich(Metadata $metadata)
+    public function enrich(Metadata $metadata): Metadata
     {
         $this->calls[] = $metadata;
 
         return $metadata->merge(Metadata::kv('traced', true));
     }
 
-    public function callCount()
+    public function callCount(): int
     {
         return count($this->calls);
     }

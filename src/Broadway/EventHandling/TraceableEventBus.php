@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventHandling;
 
 use Broadway\Domain\DomainEventStream;
@@ -17,11 +19,11 @@ use Broadway\Domain\DomainMessage;
 /**
  * Event bus that is able to record all dispatched events.
  */
-class TraceableEventBus implements EventBus
+final class TraceableEventBus implements EventBus
 {
     private $eventBus;
     private $recorded = [];
-    private $tracing  = false;
+    private $tracing = false;
 
     public function __construct(EventBus $eventBus)
     {
@@ -29,21 +31,21 @@ class TraceableEventBus implements EventBus
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function subscribe(EventListener $eventListener)
+    public function subscribe(EventListener $eventListener): void
     {
         $this->eventBus->subscribe($eventListener);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function publish(DomainEventStream $domainMessages)
+    public function publish(DomainEventStream $domainMessages): void
     {
         $this->eventBus->publish($domainMessages);
 
-        if (! $this->tracing) {
+        if (!$this->tracing) {
             return;
         }
 
@@ -53,9 +55,9 @@ class TraceableEventBus implements EventBus
     }
 
     /**
-     * @return array Payloads of the recorded events
+     * @return mixed[] Payloads of the recorded events
      */
-    public function getEvents()
+    public function getEvents(): array
     {
         return array_map(
             function (DomainMessage $message) {
@@ -68,7 +70,7 @@ class TraceableEventBus implements EventBus
     /**
      * Start tracing.
      */
-    public function trace()
+    public function trace(): void
     {
         $this->tracing = true;
     }

@@ -1,6 +1,17 @@
 <?php
 
-require_once __DIR__ . '/Invites.php';
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+require_once __DIR__.'/Invites.php';
 
 /**.
  *
@@ -11,7 +22,7 @@ require_once __DIR__ . '/Invites.php';
  * - Third, the outcome is asserted. This can either be 1) some events are
  *   recorded, or 2) an exception is thrown.
  */
-class InvitationTest extends Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase
+class InvitesTest extends Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase
 {
     private $generator;
 
@@ -21,7 +32,7 @@ class InvitationTest extends Broadway\EventSourcing\Testing\AggregateRootScenari
         $this->generator = new Broadway\UuidGenerator\Rfc4122\Version4Generator();
     }
 
-    protected function getAggregateRootClass()
+    protected function getAggregateRootClass(): string
     {
         return Invitation::class;
     }
@@ -74,7 +85,7 @@ class InvitationTest extends Broadway\EventSourcing\Testing\AggregateRootScenari
 
     /**
      * @test
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Already accepted.
      */
     public function an_accepted_invite_cannot_be_declined()
@@ -123,7 +134,7 @@ class InvitationTest extends Broadway\EventSourcing\Testing\AggregateRootScenari
 
     /**
      * @test
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Already declined.
      */
     public function a_declined_invite_cannot_be_accepted()

@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Repository;
 
 use Broadway\Domain\AggregateRoot;
@@ -20,19 +22,17 @@ interface Repository
 {
     /**
      * Adds the aggregate to the repository.
-     *
-     * @param AggregateRoot $aggregate
      */
-    public function save(AggregateRoot $aggregate);
+    public function save(AggregateRoot $aggregate): void;
 
     /**
      * Loads an aggregate from the given id.
      *
      * @param mixed $id
      *
-     * @return AggregateRoot
-     *
      * @throws AggregateNotFoundException
+     *
+     * @return AggregateRoot
      */
-    public function load($id);
+    public function load($id): AggregateRoot;
 }

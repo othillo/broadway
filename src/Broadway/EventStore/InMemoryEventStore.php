@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\EventStore;
 
 use Broadway\Domain\DomainEventStream;
@@ -22,14 +24,14 @@ use Broadway\EventStore\Management\EventStoreManagement;
  *
  * Useful for testing code that uses an event store.
  */
-class InMemoryEventStore implements EventStore, EventStoreManagement
+final class InMemoryEventStore implements EventStore, EventStoreManagement
 {
     private $events = [];
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function load($id)
+    public function load($id): DomainEventStream
     {
         $id = (string) $id;
 
@@ -41,9 +43,9 @@ class InMemoryEventStore implements EventStore, EventStoreManagement
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function loadFromPlayhead($id, $playhead)
+    public function loadFromPlayhead($id, int $playhead): DomainEventStream
     {
         $id = (string) $id;
 
@@ -64,13 +66,13 @@ class InMemoryEventStore implements EventStore, EventStoreManagement
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function append($id, DomainEventStream $eventStream)
+    public function append($id, DomainEventStream $eventStream): void
     {
         $id = (string) $id;
 
-        if (! isset($this->events[$id])) {
+        if (!isset($this->events[$id])) {
             $this->events[$id] = [];
         }
 
@@ -88,7 +90,7 @@ class InMemoryEventStore implements EventStore, EventStoreManagement
      * @param DomainMessage[]   $events
      * @param DomainEventStream $eventsToAppend
      */
-    private function assertStream($events, $eventsToAppend)
+    private function assertStream(array $events, DomainEventStream $eventsToAppend): void
     {
         /** @var DomainMessage $event */
         foreach ($eventsToAppend as $event) {
@@ -100,11 +102,11 @@ class InMemoryEventStore implements EventStore, EventStoreManagement
         }
     }
 
-    public function visitEvents(Criteria $criteria, EventVisitor $eventVisitor)
+    public function visitEvents(Criteria $criteria, EventVisitor $eventVisitor): void
     {
         foreach ($this->events as $id => $events) {
             foreach ($events as $event) {
-                if (! $criteria->isMatchedBy($event)) {
+                if (!$criteria->isMatchedBy($event)) {
                     continue;
                 }
 

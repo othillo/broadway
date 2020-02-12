@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Domain;
 
 use ArrayIterator;
@@ -17,12 +19,12 @@ use IteratorAggregate;
 /**
  * Represents a stream of DomainEventMessages in sequence.
  */
-class DomainEventStream implements IteratorAggregate
+final class DomainEventStream implements IteratorAggregate
 {
     private $events;
 
     /**
-     * @param array $events
+     * @param mixed[] $events
      */
     public function __construct(array $events)
     {
@@ -32,7 +34,7 @@ class DomainEventStream implements IteratorAggregate
     /**
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->events);
     }

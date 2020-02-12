@@ -1,12 +1,23 @@
 <?php
 
+/*
+ * This file is part of the broadway/broadway package.
+ *
+ * (c) Qandidate.com <opensource@qandidate.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Broadway\EventStore\Exception;
 
 use Broadway\Domain\DomainEventStream;
 use Broadway\EventStore\EventStoreException;
 use Exception;
 
-class DuplicatePlayheadException extends EventStoreException
+final class DuplicatePlayheadException extends EventStoreException
 {
     /**
      * @var DomainEventStream
@@ -19,7 +30,7 @@ class DuplicatePlayheadException extends EventStoreException
      */
     public function __construct(DomainEventStream $eventStream, $previous = null)
     {
-        parent::__construct(null, 0, $previous);
+        parent::__construct('', 0, $previous);
 
         $this->eventStream = $eventStream;
     }
@@ -27,7 +38,7 @@ class DuplicatePlayheadException extends EventStoreException
     /**
      * @return DomainEventStream
      */
-    public function getEventStream()
+    public function getEventStream(): DomainEventStream
     {
         return $this->eventStream;
     }

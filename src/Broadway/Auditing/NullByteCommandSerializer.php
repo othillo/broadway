@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Broadway\Auditing;
 
 /**
@@ -17,12 +19,12 @@ namespace Broadway\Auditing;
  * There are many other ways to implement serialization on commands, but since
  * this is only for logging purposes we get away with this solution for now.
  */
-class NullByteCommandSerializer implements CommandSerializer
+final class NullByteCommandSerializer implements CommandSerializer
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function serialize($command)
+    public function serialize($command): array
     {
         $serializedCommand = [];
         foreach ((array) $command as $key => $value) {
