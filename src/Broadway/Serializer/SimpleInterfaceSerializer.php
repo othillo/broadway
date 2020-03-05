@@ -22,6 +22,8 @@ final class SimpleInterfaceSerializer implements Serializer
 {
     /**
      * {@inheritdoc}
+     *
+     * @return array[]|string[]
      */
     public function serialize($object): array
     {

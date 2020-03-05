@@ -32,9 +32,21 @@ use PHPUnit\Framework\TestCase;
  */
 class Scenario
 {
+    /**
+     * @var TraceableEventStore
+     */
     private $eventStore;
+    /**
+     * @var CommandHandler
+     */
     private $commandHandler;
+    /**
+     * @var TestCase
+     */
     private $testCase;
+    /**
+     * @var string
+     */
     private $aggregateId;
 
     public function __construct(

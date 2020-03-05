@@ -18,6 +18,9 @@ use Webmozart\Assert\Assert;
 
 final class WhitelistConcurrencyConflictResolver implements ConcurrencyConflictResolver
 {
+    /**
+     * @var array
+     */
     private $independentEvents = [];
 
     public function registerIndependentEvents(string $eventClass1, string $eventClass2): void

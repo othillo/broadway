@@ -44,7 +44,7 @@ abstract class EventStoreManagementTest extends TestCase
         $this->createAndInsertEventFixtures();
     }
 
-    protected function visitEvents(Criteria $criteria = null)
+    protected function visitEvents(Criteria $criteria = null): array
     {
         $eventVisitor = new RecordingEventVisitor();
 
@@ -53,10 +53,10 @@ abstract class EventStoreManagementTest extends TestCase
         return $eventVisitor->getVisitedEvents();
     }
 
-    abstract protected function createEventStore();
+    abstract protected function createEventStore(): EventStore;
 
     /** @test */
-    public function it_visits_all_events()
+    public function it_visits_all_events(): void
     {
         $visitedEvents = $this->visitEvents(Criteria::create());
 
@@ -64,7 +64,7 @@ abstract class EventStoreManagementTest extends TestCase
     }
 
     /** @test */
-    public function it_visits_aggregate_root_ids()
+    public function it_visits_aggregate_root_ids(): void
     {
         $visitedEvents = $this->visitEvents(Criteria::create()->withAggregateRootIds([
             $this->getId(1),
@@ -88,7 +88,7 @@ abstract class EventStoreManagementTest extends TestCase
     }
 
     /** @test */
-    public function it_visits_event_types()
+    public function it_visits_event_types(): void
     {
         $visitedEvents = $this->visitEvents(Criteria::create()
             ->withEventTypes([
@@ -112,7 +112,7 @@ abstract class EventStoreManagementTest extends TestCase
     /**
      * @test
      */
-    public function it_visits_aggregate_root_types()
+    public function it_visits_aggregate_root_types(): void
     {
         $this->expectException(CriteriaNotSupportedException::class);
 
@@ -124,7 +124,7 @@ abstract class EventStoreManagementTest extends TestCase
         );
     }
 
-    private function createAndInsertEventFixtures()
+    private function createAndInsertEventFixtures(): void
     {
         foreach ($this->getEventFixtures() as $domainMessage) {
             $this->eventStore->append($domainMessage->getId(), new DomainEventStream([$domainMessage]));
@@ -132,9 +132,9 @@ abstract class EventStoreManagementTest extends TestCase
     }
 
     /**
-     * @return DomainMessage[]
+     * @return mixed[]
      */
-    protected function getEventFixtures()
+    protected function getEventFixtures(): array
     {
         return [
             $this->createDomainMessage(1, 0, new Start()),
@@ -172,19 +172,26 @@ abstract class EventStoreManagementTest extends TestCase
         ];
     }
 
-    private function createDomainMessage($id, int $playhead, $event)
+    /**
+     * @param mixed $id
+     * @param mixed $event
+     */
+    private function createDomainMessage($id, int $playhead, $event): DomainMessage
     {
         $id = $this->getId($id);
 
         return new DomainMessage((string) $id, $playhead, new Metadata([]), $event, $this->now);
     }
 
+    /**
+     * @param mixed $id
+     */
     private function getId($id): string
     {
         return sprintf('%08d-%04d-4%03d-%04d-%012d', $id, $id, $id, $id, $id);
     }
 
-    private function assertVisitedEventsArEquals(array $expectedEvents, array $actualEvents)
+    private function assertVisitedEventsArEquals(array $expectedEvents, array $actualEvents): void
     {
         $this->assertEquals(
             $this->groupEventsByAggregateTypeAndId($expectedEvents),
@@ -195,7 +202,7 @@ abstract class EventStoreManagementTest extends TestCase
     /**
      * @param DomainMessage[] $events
      */
-    private function groupEventsByAggregateTypeAndId(array $events)
+    private function groupEventsByAggregateTypeAndId(array $events): array
     {
         $eventsByAggregateTypeAndId = [];
         foreach ($events as $event) {
@@ -229,12 +236,15 @@ class RecordingEventVisitor implements EventVisitor
         $this->visitedEvents[] = $domainMessage;
     }
 
-    public function getVisitedEvents()
+    /**
+     * @return DomainMessage[]
+     */
+    public function getVisitedEvents(): array
     {
         return $this->visitedEvents;
     }
 
-    public function clearVisitedEvents()
+    public function clearVisitedEvents(): void
     {
         $this->visitedEvents = [];
     }
@@ -242,11 +252,14 @@ class RecordingEventVisitor implements EventVisitor
 
 class Event implements Serializable
 {
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): \Broadway\EventStore\Management\Testing\Event
     {
         return new self();
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serialize(): array
     {
         return [];
@@ -259,18 +272,24 @@ class Start extends Event
 
 class Middle extends Event
 {
+    /**
+     * @var string
+     */
     public $position;
 
-    public function __construct($position)
+    public function __construct(string $position)
     {
         $this->position = $position;
     }
 
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): \Broadway\EventStore\Management\Testing\Middle
     {
         return new self($data['position']);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serialize(): array
     {
         return [

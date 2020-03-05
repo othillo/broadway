@@ -17,6 +17,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use Broadway\EventStore\EventStore;
 use Broadway\EventStore\EventStreamNotFoundException;
 use Broadway\EventStore\Exception\DuplicatePlayheadException;
 use Broadway\Serializer\Serializable;
@@ -27,15 +28,16 @@ use PHPUnit\Framework\TestCase;
 abstract class EventStoreTest extends TestCase
 {
     /**
-     * @varEventStore
+     * @var EventStore
      */
     protected $eventStore;
 
     /**
+     * @param mixed $id
      * @test
      * @dataProvider idDataProvider
      */
-    public function it_creates_a_new_entry_when_id_is_new($id)
+    public function it_creates_a_new_entry_when_id_is_new($id): void
     {
         $domainEventStream = new DomainEventStream([
             $this->createDomainMessage($id, 0),
@@ -50,10 +52,11 @@ abstract class EventStoreTest extends TestCase
     }
 
     /**
+     * @param mixed $id
      * @test
      * @dataProvider idDataProvider
      */
-    public function it_appends_to_an_already_existing_stream($id)
+    public function it_appends_to_an_already_existing_stream($id): void
     {
         $dateTime = DateTime::fromString('2014-03-12T14:17:19.176169+00:00');
         $domainEventStream = new DomainEventStream([
@@ -82,10 +85,11 @@ abstract class EventStoreTest extends TestCase
     }
 
     /**
+     * @param mixed $id
      * @test
      * @dataProvider idDataProvider
      */
-    public function it_throws_an_exception_when_requesting_the_stream_of_a_non_existing_aggregate($id)
+    public function it_throws_an_exception_when_requesting_the_stream_of_a_non_existing_aggregate($id): void
     {
         $this->expectException(EventStreamNotFoundException::class);
 
@@ -93,10 +97,11 @@ abstract class EventStoreTest extends TestCase
     }
 
     /**
+     * @param mixed $id
      * @test
      * @dataProvider idDataProvider
      */
-    public function it_throws_an_exception_when_appending_a_duplicate_playhead($id)
+    public function it_throws_an_exception_when_appending_a_duplicate_playhead($id): void
     {
         $eventStream = new DomainEventStream([$this->createDomainMessage($id, 0)]);
 
@@ -109,7 +114,7 @@ abstract class EventStoreTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_an_exception_when_an_id_cannot_be_converted_to_a_string()
+    public function it_throws_an_exception_when_an_id_cannot_be_converted_to_a_string(): void
     {
         $id = new IdentityThatCannotBeConvertedToAString(
             'Yolntbyaac' //You only live nine times because you are a cat
@@ -130,10 +135,11 @@ abstract class EventStoreTest extends TestCase
     }
 
     /**
+     * @param mixed $id
      * @test
      * @dataProvider idDataProvider
      */
-    public function it_loads_events_starting_from_a_given_playhead($id)
+    public function it_loads_events_starting_from_a_given_playhead($id): void
     {
         $dateTime = DateTime::fromString('2014-03-12T14:17:19.176169+00:00');
         $domainEventStream = new DomainEventStream([
@@ -154,10 +160,11 @@ abstract class EventStoreTest extends TestCase
     }
 
     /**
+     * @param mixed $id
      * @test
      * @dataProvider idDataProvider
      */
-    public function it_returns_empty_event_stream_when_no_events_are_committed_since_given_playhead($id)
+    public function it_returns_empty_event_stream_when_no_events_are_committed_since_given_playhead($id): void
     {
         $this->eventStore->append($id, new DomainEventStream([
             $this->createDomainMessage($id, 0),
@@ -169,7 +176,7 @@ abstract class EventStoreTest extends TestCase
         );
     }
 
-    public function idDataProvider()
+    public function idDataProvider(): array
     {
         return [
             'Simple String' => [
@@ -189,7 +196,10 @@ abstract class EventStoreTest extends TestCase
         ];
     }
 
-    protected function createDomainMessage($id, int $playhead, DateTime $recordedOn = null)
+    /**
+     * @param mixed $id
+     */
+    protected function createDomainMessage($id, int $playhead, DateTime $recordedOn = null): DomainMessage
     {
         return new DomainMessage($id, $playhead, new MetaData([]), new Event(), $recordedOn ? $recordedOn : DateTime::now());
     }
@@ -197,11 +207,14 @@ abstract class EventStoreTest extends TestCase
 
 class Event implements Serializable
 {
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): \Broadway\EventStore\Testing\Event
     {
         return new self();
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serialize(): array
     {
         return [];
@@ -210,14 +223,20 @@ class Event implements Serializable
 
 class StringIdentity
 {
+    /**
+     * @var mixed
+     */
     private $id;
 
+    /**
+     * @param mixed $id
+     */
     public function __construct($id)
     {
         $this->id = $id;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->id;
     }
@@ -225,8 +244,14 @@ class StringIdentity
 
 class IdentityThatCannotBeConvertedToAString
 {
+    /**
+     * @var mixed
+     */
     private $id;
 
+    /**
+     * @param mixed $id
+     */
     public function __construct($id)
     {
         $this->id = $id;

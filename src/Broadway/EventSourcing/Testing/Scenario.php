@@ -17,6 +17,7 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\AggregateFactory\AggregateFactory;
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -31,11 +32,28 @@ use PHPUnit\Framework\TestCase;
  */
 class Scenario
 {
+    /**
+     * @var TestCase
+     */
     private $testCase;
+    /**
+     * @var AggregateFactory
+     */
     private $factory;
 
+    /**
+     * @var string
+     */
     private $aggregateRootClass;
+
+    /**
+     * @var EventSourcedAggregateRoot
+     */
     private $aggregateRootInstance;
+
+    /**
+     * @var string
+     */
     private $aggregateId;
 
     public function __construct(TestCase $testCase, AggregateFactory $factory, string $aggregateRootClass)
@@ -80,10 +98,6 @@ class Scenario
 
     public function when(callable $when): self
     {
-        if (!is_callable($when)) {
-            return $this;
-        }
-
         if (null === $this->aggregateRootInstance) {
             $this->aggregateRootInstance = $when($this->aggregateRootInstance);
 

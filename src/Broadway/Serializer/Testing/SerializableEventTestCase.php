@@ -25,7 +25,7 @@ abstract class SerializableEventTestCase extends TestCase
     /**
      * @test
      */
-    public function its_serializable()
+    public function its_serializable(): void
     {
         $this->assertInstanceOf(Serializable::class, $this->createEvent());
     }
@@ -33,7 +33,7 @@ abstract class SerializableEventTestCase extends TestCase
     /**
      * @test
      */
-    public function serializing_and_deserializing_yields_the_same_object()
+    public function serializing_and_deserializing_yields_the_same_object(): void
     {
         $serializer = new SimpleInterfaceSerializer();
         $event = $this->createEvent();

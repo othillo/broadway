@@ -21,8 +21,17 @@ use Broadway\Domain\DomainMessage;
  */
 final class TraceableEventStore implements EventStore
 {
+    /**
+     * @var \Broadway\EventStore\EventStore
+     */
     private $eventStore;
+    /**
+     * @var array
+     */
     private $recorded = [];
+    /**
+     * @var bool
+     */
     private $tracing = false;
 
     public function __construct(EventStore $eventStore)

@@ -24,6 +24,8 @@ class ReflectionSerializer implements Serializer
 {
     /**
      * {@inheritdoc}
+     *
+     * @return mixed[]
      */
     public function serialize($object): array
     {
@@ -56,10 +58,7 @@ class ReflectionSerializer implements Serializer
         return $data;
     }
 
-    /**
-     * @param object $object
-     */
-    private function serializeObjectRecursively($object): array
+    private function serializeObjectRecursively(object $object): array
     {
         $reflection = new ReflectionClass($object);
         $properties = $reflection->getProperties();
@@ -84,7 +83,7 @@ class ReflectionSerializer implements Serializer
     /**
      * {@inheritdoc}
      */
-    public function deserialize(array $serializedObject)
+    public function deserialize(array $serializedObject): object
     {
         return $this->deserializeObjectRecursively($serializedObject);
     }
@@ -92,7 +91,7 @@ class ReflectionSerializer implements Serializer
     /**
      * @param mixed $value
      *
-     * @return mixed
+     * @return object|array
      */
     private function deserializeValue($value)
     {
@@ -105,6 +104,9 @@ class ReflectionSerializer implements Serializer
         return $value;
     }
 
+    /**
+     * @return mixed[]
+     */
     private function deserializeArrayRecursively(array $array): array
     {
         $data = [];
@@ -115,12 +117,7 @@ class ReflectionSerializer implements Serializer
         return $data;
     }
 
-    /**
-     * @param array $serializedObject
-     *
-     * @return object
-     */
-    private function deserializeObjectRecursively($serializedObject)
+    private function deserializeObjectRecursively(array $serializedObject): object
     {
         Assert::keyExists($serializedObject, 'class', "Key 'class' should be set.");
         Assert::keyExists($serializedObject, 'payload', "Key 'payload' should be set.");

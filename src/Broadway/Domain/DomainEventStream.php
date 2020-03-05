@@ -21,6 +21,9 @@ use IteratorAggregate;
  */
 final class DomainEventStream implements IteratorAggregate
 {
+    /**
+     * @var mixed[]
+     */
     private $events;
 
     /**

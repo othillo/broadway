@@ -27,6 +27,9 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
      * @var array
      */
     private $uncommittedEvents = [];
+    /**
+     * @var int
+     */
     private $playhead = -1; // 0-based playhead allows events[0] to contain playhead 0
 
     /**
@@ -104,7 +107,7 @@ abstract class EventSourcedAggregateRoot implements AggregateRootInterface
      *
      * Override this method if your aggregate root contains child entities.
      *
-     * @return EventSourcedEntity[]
+     * @return mixed[]
      */
     protected function getChildEntities(): array
     {

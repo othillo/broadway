@@ -27,7 +27,13 @@ final class EventDispatchingCommandBus implements CommandBus
     const EVENT_COMMAND_SUCCESS = 'broadway.command_handling.command_success';
     const EVENT_COMMAND_FAILURE = 'broadway.command_handling.command_failure';
 
+    /**
+     * @var CommandBus
+     */
     private $commandBus;
+    /**
+     * @var EventDispatcher
+     */
     private $dispatcher;
 
     public function __construct(CommandBus $commandBus, EventDispatcher $dispatcher)

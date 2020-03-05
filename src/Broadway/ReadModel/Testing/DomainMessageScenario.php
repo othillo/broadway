@@ -31,8 +31,17 @@ use PHPUnit\Framework\TestCase;
  */
 final class DomainMessageScenario
 {
+    /**
+     * @var \PHPUnit\Framework\TestCase
+     */
     private $testCase;
+    /**
+     * @var \Broadway\EventHandling\EventListener
+     */
     private $projector;
+    /**
+     * @var \Broadway\ReadModel\Repository
+     */
     private $repository;
 
     public function __construct(

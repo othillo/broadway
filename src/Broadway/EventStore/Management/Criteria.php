@@ -17,8 +17,17 @@ use Broadway\Domain\DomainMessage;
 
 final class Criteria
 {
+    /**
+     * @var array
+     */
     private $aggregateRootTypes = [];
+    /**
+     * @var array
+     */
     private $aggregateRootIds = [];
+    /**
+     * @var array
+     */
     private $eventTypes = [];
 
     /**
@@ -63,7 +72,7 @@ final class Criteria
     /**
      * Get the aggregate root types for the criteria.
      *
-     * @return string[]
+     * @return mixed[]
      */
     public function getAggregateRootTypes(): array
     {

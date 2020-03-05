@@ -24,6 +24,9 @@ use Broadway\ReadModel\Transferable;
  */
 final class InMemoryRepository implements Repository, Transferable
 {
+    /**
+     * @var array
+     */
     private $data = [];
 
     /**
@@ -49,6 +52,8 @@ final class InMemoryRepository implements Repository, Transferable
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed[]
      */
     public function findBy(array $fields): array
     {
@@ -56,7 +61,7 @@ final class InMemoryRepository implements Repository, Transferable
             return [];
         }
 
-        return array_values(array_filter($this->data, function ($model) use ($fields) {
+        return array_values(array_filter($this->data, function ($model) use ($fields): bool {
             foreach ($fields as $field => $value) {
                 $getter = 'get'.ucfirst($field);
 
@@ -75,6 +80,8 @@ final class InMemoryRepository implements Repository, Transferable
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed[]
      */
     public function findAll(): array
     {

@@ -20,8 +20,14 @@ use Broadway\Serializer\Serializable;
  */
 final class Metadata implements Serializable
 {
+    /**
+     * @var array
+     */
     private $values = [];
 
+    /**
+     * @param mixed[] $values
+     */
     public function __construct(array $values = [])
     {
         $this->values = $values;
@@ -68,6 +74,8 @@ final class Metadata implements Serializable
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed[]
      */
     public function serialize(): array
     {

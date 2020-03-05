@@ -23,6 +23,8 @@ final class NullByteCommandSerializer implements CommandSerializer
 {
     /**
      * {@inheritdoc}
+     *
+     * @return mixed[]
      */
     public function serialize($command): array
     {

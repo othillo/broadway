@@ -18,8 +18,19 @@ namespace Broadway\CommandHandling;
  */
 final class SimpleCommandBus implements CommandBus
 {
+    /**
+     * @var CommandHandler[]
+     */
     private $commandHandlers = [];
+
+    /**
+     * @var mixed[]
+     */
     private $queue = [];
+
+    /**
+     * @var bool
+     */
     private $isDispatching = false;
 
     /**

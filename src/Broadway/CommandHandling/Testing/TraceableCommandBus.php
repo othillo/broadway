@@ -21,8 +21,19 @@ use Broadway\CommandHandling\CommandHandler;
  */
 final class TraceableCommandBus implements CommandBus
 {
+    /**
+     * @var CommandHandler[]
+     */
     private $commandHandlers = [];
+
+    /**
+     * @var mixed[]
+     */
     private $commands = [];
+
+    /**
+     * @var bool
+     */
     private $record = false;
 
     /**

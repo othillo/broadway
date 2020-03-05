@@ -21,8 +21,17 @@ use Broadway\Domain\DomainMessage;
  */
 final class TraceableEventBus implements EventBus
 {
+    /**
+     * @var EventBus
+     */
     private $eventBus;
+    /**
+     * @var array
+     */
     private $recorded = [];
+    /**
+     * @var bool
+     */
     private $tracing = false;
 
     public function __construct(EventBus $eventBus)

@@ -22,6 +22,9 @@ use Broadway\EventSourcing\EventStreamDecorator;
  */
 final class MetadataEnrichingEventStreamDecorator implements EventStreamDecorator
 {
+    /**
+     * @var MetadataEnricher[]
+     */
     private $metadataEnrichers;
 
     /**

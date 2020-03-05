@@ -20,8 +20,17 @@ use Broadway\Domain\DomainEventStream;
  */
 final class SimpleEventBus implements EventBus
 {
+    /**
+     * @var array
+     */
     private $eventListeners = [];
+    /**
+     * @var array
+     */
     private $queue = [];
+    /**
+     * @var bool
+     */
     private $isPublishing = false;
 
     /**

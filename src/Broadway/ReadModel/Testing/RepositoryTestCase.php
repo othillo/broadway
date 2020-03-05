@@ -33,7 +33,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_saves_and_finds_read_models_by_id()
+    public function it_saves_and_finds_read_models_by_id(): void
     {
         $model = $this->createReadModel('1', 'othillo', 'bar');
 
@@ -45,7 +45,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_saves_and_finds_read_models_with_a_value_object_id()
+    public function it_saves_and_finds_read_models_with_a_value_object_id(): void
     {
         $id = new TestReadModelId('42');
         $model = $this->createReadModel($id, 'othillo', 'bar');
@@ -58,7 +58,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_returns_null_if_not_found_on_empty_repo()
+    public function it_returns_null_if_not_found_on_empty_repo(): void
     {
         $this->assertEquals(null, $this->repository->find(2));
     }
@@ -66,7 +66,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_returns_null_if_not_found()
+    public function it_returns_null_if_not_found(): void
     {
         $model = $this->createReadModel('1', 'othillo', 'bar');
 
@@ -78,7 +78,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_finds_by_name()
+    public function it_finds_by_name(): void
     {
         $model1 = $this->createReadModel('1', 'othillo', 'bar');
         $model2 = $this->createReadModel('2', 'asm89', 'baz');
@@ -93,7 +93,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_finds_by_one_element_in_array()
+    public function it_finds_by_one_element_in_array(): void
     {
         $model1 = $this->createReadModel('1', 'othillo', 'bar', ['elem1', 'elem2']);
         $model2 = $this->createReadModel('2', 'asm89', 'baz', ['elem3', 'elem4']);
@@ -108,7 +108,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_finds_if_all_clauses_match()
+    public function it_finds_if_all_clauses_match(): void
     {
         $model1 = $this->createReadModel('1', 'othillo', 'bar');
         $model2 = $this->createReadModel('2', 'asm89', 'baz');
@@ -123,7 +123,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_does_not_find_when_one_of_the_clauses_doesnt_match()
+    public function it_does_not_find_when_one_of_the_clauses_doesnt_match(): void
     {
         $model1 = $this->createReadModel('1', 'othillo', 'bar');
         $model2 = $this->createReadModel('2', 'asm89', 'baz');
@@ -138,7 +138,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_returns_empty_array_when_found_nothing()
+    public function it_returns_empty_array_when_found_nothing(): void
     {
         $model1 = $this->createReadModel('1', 'othillo', 'bar');
         $model2 = $this->createReadModel('2', 'asm89', 'baz');
@@ -152,7 +152,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_returns_empty_array_when_searching_for_empty_array()
+    public function it_returns_empty_array_when_searching_for_empty_array(): void
     {
         $model = $this->createReadModel('1', 'othillo', 'bar');
 
@@ -164,7 +164,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_removes_a_readmodel()
+    public function it_removes_a_readmodel(): void
     {
         $model = $this->createReadModel('1', 'John', 'Foo', ['foo' => 'bar']);
         $this->repository->save($model);
@@ -177,7 +177,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_removes_a_read_model_using_a_value_object_as_its_id()
+    public function it_removes_a_read_model_using_a_value_object_as_its_id(): void
     {
         $id = new TestReadModelId('175');
 
@@ -192,7 +192,7 @@ abstract class RepositoryTestCase extends TestCase
     /**
      * @test
      */
-    public function it_returns_all_read_models()
+    public function it_returns_all_read_models(): void
     {
         $model1 = $this->createReadModel('1', 'othillo', 'bar');
         $model2 = $this->createReadModel('2', 'asm89', 'baz');
@@ -205,7 +205,11 @@ abstract class RepositoryTestCase extends TestCase
         $this->assertEquals([$model1, $model2, $model3], $this->repository->findAll());
     }
 
-    protected function createReadModel($id, $name, $foo, array $array = [])
+    /**
+     * @param mixed $id
+     * @param mixed $foo
+     */
+    protected function createReadModel($id, string $name, $foo, array $array = []): RepositoryTestReadModel
     {
         return new RepositoryTestReadModel($id, $name, $foo, $array);
     }
@@ -213,14 +217,17 @@ abstract class RepositoryTestCase extends TestCase
 
 class TestReadModelId
 {
+    /**
+     * @var string
+     */
     private $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->value;
     }

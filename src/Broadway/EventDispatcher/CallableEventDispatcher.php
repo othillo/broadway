@@ -18,6 +18,9 @@ namespace Broadway\EventDispatcher;
  */
 final class CallableEventDispatcher implements EventDispatcher
 {
+    /**
+     * @var array
+     */
     private $listeners = [];
 
     /**

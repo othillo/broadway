@@ -17,9 +17,21 @@ use Broadway\ReadModel\SerializableReadModel;
 
 class RepositoryTestReadModel implements SerializableReadModel
 {
+    /**
+     * @var string
+     */
     private $id;
+    /**
+     * @var string
+     */
     private $name;
+    /**
+     * @var mixed
+     */
     private $foo;
+    /**
+     * @var array
+     */
     private $array;
 
     /**
@@ -57,12 +69,15 @@ class RepositoryTestReadModel implements SerializableReadModel
         return $this->array;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serialize(): array
     {
         return get_object_vars($this);
     }
 
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): \Broadway\ReadModel\Testing\RepositoryTestReadModel
     {
         return new self($data['id'], $data['name'], $data['foo'], $data['array']);
     }

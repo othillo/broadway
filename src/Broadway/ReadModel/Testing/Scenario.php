@@ -32,11 +32,29 @@ use PHPUnit\Framework\TestCase;
  */
 class Scenario
 {
+    /**
+     * @var \PHPUnit\Framework\TestCase
+     */
     private $testCase;
+    /**
+     * @var \Broadway\EventHandling\EventListener
+     */
     private $projector;
+    /**
+     * @var \Broadway\ReadModel\Repository
+     */
     private $repository;
+    /**
+     * @var int
+     */
     private $playhead;
+    /**
+     * @var string
+     */
     private $aggregateId;
+    /**
+     * @var callable
+     */
     private $dateTimeGenerator;
 
     public function __construct(
@@ -49,7 +67,7 @@ class Scenario
         $this->projector = $projector;
         $this->playhead = -1;
         $this->aggregateId = '1';
-        $this->dateTimeGenerator = function ($event) {
+        $this->dateTimeGenerator = function ($event): \Broadway\Domain\DateTime {
             return DateTime::now();
         };
     }

@@ -17,6 +17,9 @@ use Broadway\EventDispatcher\EventDispatcher;
 
 final class TraceableEventDispatcher implements EventDispatcher
 {
+    /**
+     * @var array
+     */
     private $dispatchedEvents = [];
 
     public function dispatch(string $eventName, array $arguments): void

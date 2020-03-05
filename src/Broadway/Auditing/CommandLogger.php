@@ -23,7 +23,13 @@ use Psr\Log\LoggerInterface;
  */
 final class CommandLogger
 {
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+    /**
+     * @var CommandSerializer
+     */
     private $commandSerializer;
 
     public function __construct(LoggerInterface $logger, CommandSerializer $commandSerializer)
@@ -68,6 +74,8 @@ final class CommandLogger
 
     /**
      * @param mixed $command
+     *
+     * @return mixed[]
      */
     private function getCommandData($command): array
     {

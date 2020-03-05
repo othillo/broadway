@@ -26,6 +26,9 @@ use Broadway\EventStore\Management\EventStoreManagement;
  */
 final class InMemoryEventStore implements EventStore, EventStoreManagement
 {
+    /**
+     * @var array
+     */
     private $events = [];
 
     /**
@@ -57,7 +60,7 @@ final class InMemoryEventStore implements EventStore, EventStoreManagement
             array_values(
                 array_filter(
                     $this->events[$id],
-                    function ($event) use ($playhead) {
+                    function ($event) use ($playhead): bool {
                         return $playhead <= $event->getPlayhead();
                     }
                 )

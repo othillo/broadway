@@ -28,10 +28,25 @@ use Broadway\Repository\Repository;
  */
 class EventSourcingRepository implements Repository
 {
+    /**
+     * @var \Broadway\EventStore\EventStore
+     */
     private $eventStore;
+    /**
+     * @var \Broadway\EventHandling\EventBus
+     */
     private $eventBus;
+    /**
+     * @var string
+     */
     private $aggregateClass;
+    /**
+     * @var \Broadway\EventSourcing\EventStreamDecorator[]
+     */
     private $eventStreamDecorators = [];
+    /**
+     * @var \Broadway\EventSourcing\AggregateFactory\AggregateFactory
+     */
     private $aggregateFactory;
 
     /**

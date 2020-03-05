@@ -75,7 +75,7 @@ abstract class SimpleEventSourcedEntity implements EventSourcedEntity
     /**
      * Returns all child entities.
      *
-     * @return EventSourcedEntity[]
+     * @return mixed[]
      */
     protected function getChildEntities(): array
     {

@@ -24,6 +24,9 @@ final class DateTime
 {
     const FORMAT_STRING = 'Y-m-d\TH:i:s.uP';
 
+    /**
+     * @var DateTimeImmutable
+     */
     private $dateTime;
 
     private function __construct(DateTimeImmutable $dateTime)
