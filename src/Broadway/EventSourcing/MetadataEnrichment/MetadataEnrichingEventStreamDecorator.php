@@ -3,7 +3,7 @@
 /*
  * This file is part of the broadway/broadway package.
  *
- * (c) Qandidate.com <opensource@qandidate.com>
+ * (c) 2020 Broadway project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -25,7 +25,7 @@ final class MetadataEnrichingEventStreamDecorator implements EventStreamDecorato
     private $metadataEnrichers;
 
     /**
-     * @param MetadataEnricher[]
+     * @param MetadataEnricher[] $metadataEnrichers
      */
     public function __construct(array $metadataEnrichers = [])
     {

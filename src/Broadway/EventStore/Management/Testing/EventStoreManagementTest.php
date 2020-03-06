@@ -3,7 +3,7 @@
 /*
  * This file is part of the broadway/broadway package.
  *
- * (c) Qandidate.com <opensource@qandidate.com>
+ * (c) 2020 Broadway project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -21,6 +21,7 @@ use Broadway\EventStore\EventStore;
 use Broadway\EventStore\EventVisitor;
 use Broadway\EventStore\Management\Criteria;
 use Broadway\EventStore\Management\CriteriaNotSupportedException;
+use Broadway\EventStore\Management\EventStoreManagement;
 use Broadway\Serializer\Serializable;
 use PHPUnit\Framework\TestCase;
 
@@ -41,7 +42,6 @@ abstract class EventStoreManagementTest extends TestCase
         $this->now = DateTime::now();
         $this->eventStore = $this->createEventStore();
         $this->createAndInsertEventFixtures();
-        $this->eventVisitor = new RecordingEventVisitor();
     }
 
     protected function visitEvents(Criteria $criteria = null)
@@ -220,7 +220,7 @@ abstract class EventStoreManagementTest extends TestCase
 class RecordingEventVisitor implements EventVisitor
 {
     /**
-     * @var DomainMessage
+     * @var DomainMessage[]
      */
     private $visitedEvents;
 
@@ -244,7 +244,7 @@ class Event implements Serializable
 {
     public static function deserialize(array $data)
     {
-        return new static();
+        return new self();
     }
 
     public function serialize(): array
@@ -268,7 +268,7 @@ class Middle extends Event
 
     public static function deserialize(array $data)
     {
-        return new static($data['position']);
+        return new self($data['position']);
     }
 
     public function serialize(): array
