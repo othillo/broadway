@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "beberlei/assert": "^3.0",
-        "broadway/uuid-generator": "~0.5",
+        "broadway/uuid-generator": "^1.0",
         "php": ">=7.2"
     },
     "authors": [
@@ -35,9 +35,9 @@
       }
     ],
     "require-dev": {
-        "monolog/monolog": "~1.8",
+        "monolog/monolog": "~2.0",
         "phpunit/phpunit": "^8.0",
-        "ramsey/uuid": "^3.0",
+        "ramsey/uuid": "^4.0",
         "broadway/coding-standard": "^1.0",
         "phpstan/phpstan": "@stable"
     },
@@ -60,7 +60,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     }
 }
